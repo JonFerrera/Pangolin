@@ -9,7 +9,7 @@ namespace Pangolin
         private const double _kelvin = 273.15D;
 
         private const int _annual = 1;
-        private const int semiAnnual = 2;
+        private const int _semiAnnual = 2;
         private const int _quarterly = 4;
         private const int _monthly = 12;
         private const int _daily = 365;
@@ -1785,7 +1785,7 @@ namespace Pangolin
 
         public static decimal FixedSemiAnnualPayment(decimal principal, decimal annualInterestRate, int years)
         {
-            return FixedPayment(principal, annualInterestRate, semiAnnual, years);
+            return FixedPayment(principal, annualInterestRate, _semiAnnual, years);
         }
 
         public static decimal FixedQuarterlyPayment(decimal principal, decimal annualInterestRate, int years)
