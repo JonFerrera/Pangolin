@@ -70,7 +70,7 @@ namespace Pangolin.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("SnippetTestSource")]
+        [global::System.Configuration.DefaultSettingValueAttribute("PangolinSource")]
         public string EventLogSource {
             get {
                 return ((string)(this["EventLogSource"]));
@@ -79,7 +79,7 @@ namespace Pangolin.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("SnippetTest")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Pangolin")]
         public string EventLogName {
             get {
                 return ((string)(this["EventLogName"]));
