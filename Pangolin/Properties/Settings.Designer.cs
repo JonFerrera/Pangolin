@@ -34,7 +34,7 @@ namespace Pangolin.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("MedProSuite.com <no-reply@medprosuite.com>")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string DeveloperMailFrom {
             get {
                 return ((string)(this["DeveloperMailFrom"]));
@@ -43,7 +43,7 @@ namespace Pangolin.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Jonathan Ferrera <jonathan@mitraus.com>")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string DeveloperMailTo {
             get {
                 return ((string)(this["DeveloperMailTo"]));
