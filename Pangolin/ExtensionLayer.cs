@@ -12,19 +12,19 @@ namespace Pangolin
         {
             if (thisDataSet == null)
             {
-                throw new ArgumentNullException("thisDataSet");
+                throw new ArgumentNullException(nameof(thisDataSet));
             }
             else if (thisDataSet.Tables.Count < 1)
             {
-                throw new InvalidOperationException("thisDataSet has no tables.");
+                throw new InvalidOperationException($"{nameof(thisDataSet)} has no tables.");
             }
             else if (index < 0)
             {
-                throw new ArgumentOutOfRangeException("index", index, "index cannot be negative.");
+                throw new ArgumentOutOfRangeException(nameof(index), index, $"{nameof(index)} cannot be negative.");
             }
             else if (index >= thisDataSet.Tables.Count)
             {
-                throw new ArgumentOutOfRangeException("index", index, "index exceeds the number of tables in the set.");
+                throw new ArgumentOutOfRangeException(nameof(index), index, $"{nameof(index)} exceeds the number of tables in the set.");
             }
 
             return thisDataSet.Tables[index].GetProcessTable(filter, sort, dataViewRowState, isDistinct);
@@ -34,19 +34,19 @@ namespace Pangolin
         {
             if (thisDataSet == null)
             {
-                throw new ArgumentNullException("thisDataSet");
+                throw new ArgumentNullException(nameof(thisDataSet));
             }
             else if (thisDataSet.Tables.Count < 1)
             {
-                throw new InvalidOperationException("thisDataSet has no tables.");
+                throw new InvalidOperationException($"{nameof(thisDataSet)} has no tables.");
             }
             else if (index < 0 || index >= thisDataSet.Tables.Count)
             {
-                throw new ArgumentOutOfRangeException("index", index, "index cannot be negative.");
+                throw new ArgumentOutOfRangeException(nameof(index), index, $"{nameof(index)} cannot be negative.");
             }
             else if (index >= thisDataSet.Tables.Count)
             {
-                throw new ArgumentOutOfRangeException("index", index, "index exceeds the number of tables in the set.");
+                throw new ArgumentOutOfRangeException(nameof(index), index, $"{nameof(index)} exceeds the number of tables in the set.");
             }
 
             return thisDataSet.Tables[index].GetProcessRow(rowIndex ,filter, sort, dataViewRowState, isDistinct);
@@ -58,19 +58,19 @@ namespace Pangolin
         {
             if (thisDataTable == null)
             {
-                throw new ArgumentNullException("thisDataTable");
+                throw new ArgumentNullException(nameof(thisDataTable));
             }
             else if (thisDataTable.Columns.Count < 1)
             {
-                throw new InvalidOperationException("thisDataTable has no columns.");
+                throw new InvalidOperationException($"{nameof(thisDataTable)} has no columns.");
             }
             else if (thisDataTable.Rows.Count < 1)
             {
-                throw new InvalidOperationException("thisDataTable has no rows.");
+                throw new InvalidOperationException($"{nameof(thisDataTable)} has no rows.");
             }
             else if (index < 0)
             {
-                throw new ArgumentOutOfRangeException("index", index, "index cannot be negative.");
+                throw new ArgumentOutOfRangeException(nameof(index), index, "index cannot be negative.");
             }
 
             using (DataView dView = new DataView(thisDataTable, filter ?? string.Empty, sort ?? string.Empty, dataViewRowState))
@@ -90,15 +90,15 @@ namespace Pangolin
         {
             if (thisDataTable == null)
             {
-                throw new ArgumentNullException("thisDataTable");
+                throw new ArgumentNullException(nameof(thisDataTable));
             }
             else if (thisDataTable.Columns.Count < 1)
             {
-                throw new InvalidOperationException("thisDataTable has no columns.");
+                throw new InvalidOperationException($"{nameof(thisDataTable)} has no columns.");
             }
             else if (thisDataTable.Rows.Count < 1)
             {
-                throw new InvalidOperationException("thisDataTable has no rows.");
+                throw new InvalidOperationException($"{nameof(thisDataTable)} has no rows.");
             }
 
             using (DataView dView = new DataView(thisDataTable, filter ?? string.Empty, sort ?? string.Empty, dataViewRowState))
@@ -111,19 +111,19 @@ namespace Pangolin
         {
             if (thisDataTable == null)
             {
-                throw new ArgumentNullException("thisDataTable");
+                throw new ArgumentNullException(nameof(thisDataTable));
             }
             else if (thisDataTable.Columns.Count < 1)
             {
-                throw new InvalidOperationException("thisDataTable has no columns.");
+                throw new InvalidOperationException($"{nameof(thisDataTable)} has no columns.");
             }
             else if (thisDataTable.Rows.Count < 1)
             {
-                throw new InvalidOperationException("thisDataTable has no rows.");
+                throw new InvalidOperationException($"{nameof(thisDataTable)} has no rows.");
             }
             else if (string.IsNullOrWhiteSpace(delimiter))
             {
-                throw new ArgumentNullException("delimiter");
+                throw new ArgumentNullException(nameof(delimiter));
             }
 
             StringBuilder csvString = new StringBuilder();
@@ -240,7 +240,7 @@ namespace Pangolin
         {
             if (null == source)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
 
             return list.Contains(source);
@@ -260,9 +260,9 @@ namespace Pangolin
         #region string
         public static string FromBase64String(this string thisString)
         {
-            if (string.IsNullOrWhiteSpace(thisString))
+            if (thisString == null)
             {
-                throw new ArgumentNullException("thisString");
+                throw new ArgumentNullException(nameof(thisString));
             }
 
             try
@@ -297,15 +297,15 @@ namespace Pangolin
         {
             if (string.IsNullOrWhiteSpace(thisString))
             {
-                throw new ArgumentNullException("thisString");
+                throw new ArgumentNullException(nameof(thisString));
             }
             else if (length < 0)
             {
-                throw new ArgumentOutOfRangeException("length", length, "length cannot be less than zero.");
+                throw new ArgumentOutOfRangeException(nameof(length), length, $"{nameof(length)} cannot be less than zero.");
             }
             else if (length > thisString.Length)
             {
-                throw new ArgumentOutOfRangeException("length", length, "length exceeds the length of the string.");
+                throw new ArgumentOutOfRangeException(nameof(length), length, $"{nameof(length)} exceeds the length of the string.");
             }
 
             return thisString.Substring(0, length);
@@ -315,15 +315,15 @@ namespace Pangolin
         {
             if (string.IsNullOrWhiteSpace(thisString))
             {
-                throw new ArgumentNullException("thisString");
+                throw new ArgumentNullException(nameof(thisString));
             }
             else if (index < 0)
             {
-                throw new ArgumentOutOfRangeException("index", index, "index cannot be less than zero.");
+                throw new ArgumentOutOfRangeException(nameof(index), index, $"{nameof(index)} cannot be less than zero.");
             }
             else if (index > thisString.Length)
             {
-                throw new ArgumentOutOfRangeException("index", index, "index exceeds the length of the string.");
+                throw new ArgumentOutOfRangeException(nameof(index), index, $"{nameof(index)} exceeds the length of the string.");
             }
 
             return thisString.Substring(index);
@@ -333,27 +333,27 @@ namespace Pangolin
         {
             if (string.IsNullOrWhiteSpace(thisString))
             {
-                throw new ArgumentNullException("thisString");
+                throw new ArgumentNullException(nameof(thisString));
             }
             else if (index < 0)
             {
-                throw new ArgumentOutOfRangeException("index", index, "index cannot be less than zero.");
+                throw new ArgumentOutOfRangeException(nameof(index), index, $"{nameof(index)} cannot be less than zero.");
             }
             else if (index > thisString.Length)
             {
-                throw new ArgumentOutOfRangeException("index", index, "index exceeds the length of the string.");
+                throw new ArgumentOutOfRangeException(nameof(index), index, $"{nameof(index)} exceeds the length of the string.");
             }
             else if (length < 0)
             {
-                throw new ArgumentOutOfRangeException("length", length, "length cannot be less than zero.");
+                throw new ArgumentOutOfRangeException(nameof(length), length, $"{nameof(length)} cannot be less than zero.");
             }
             else if (length > thisString.Length)
             {
-                throw new ArgumentOutOfRangeException("length", length, "length exceeds the length of the string.");
+                throw new ArgumentOutOfRangeException(nameof(length), length, $"{nameof(length)} exceeds the length of the string.");
             }
             else if ((index + length) > thisString.Length)
             {
-                throw new ArgumentOutOfRangeException("(index + length)", (index + length), "(index + length) refers to a position not inside the string.");
+                throw new ArgumentOutOfRangeException($"({nameof(index)} + {nameof(length)})", (index + length), $"({nameof(index)} + {nameof(length)}) refers to a position not inside the string.");
             }
 
             return thisString.Substring(index, length);
@@ -363,11 +363,11 @@ namespace Pangolin
         {
             if (string.IsNullOrWhiteSpace(thisString))
             {
-                throw new ArgumentNullException("thisString");
+                throw new ArgumentNullException(nameof(thisString));
             }
             else if (count < 1)
             {
-                throw new ArgumentOutOfRangeException("count", count, "count cannot be less than one.");
+                throw new ArgumentOutOfRangeException(nameof(count), count, $"{nameof(count)} cannot be less than one.");
             }
 
             StringBuilder stringBuilder = new StringBuilder();
@@ -392,15 +392,15 @@ namespace Pangolin
         {
             if (string.IsNullOrWhiteSpace(thisString))
             {
-                throw new ArgumentNullException("thisString");
+                throw new ArgumentNullException(nameof(thisString));
             }
             else if (length < 0)
             {
-                throw new ArgumentOutOfRangeException("length", length, "length cannot be less than zero.");
+                throw new ArgumentOutOfRangeException(nameof(length), length, $"{nameof(length)} cannot be less than zero.");
             }
             else if (length > thisString.Length)
             {
-                throw new ArgumentOutOfRangeException("length", length, "length exceeds the length of the string.");
+                throw new ArgumentOutOfRangeException(nameof(length), length, $"{nameof(length)} exceeds the length of the string.");
             }
 
             return thisString.Substring(thisString.Length - length, length);
@@ -410,7 +410,7 @@ namespace Pangolin
         {
             if (string.IsNullOrWhiteSpace(thisString))
             {
-                throw new ArgumentNullException("thisString");
+                throw new ArgumentNullException(nameof(thisString));
             }
 
             byte[] textBytes = null;
@@ -431,7 +431,7 @@ namespace Pangolin
         {
             if (string.IsNullOrWhiteSpace(thisString))
             {
-                throw new ArgumentNullException("thisString");
+                throw new ArgumentNullException(nameof(thisString));
             }
 
             int.TryParse(thisString, out int result);
@@ -443,7 +443,7 @@ namespace Pangolin
         {
             if (string.IsNullOrWhiteSpace(thisString))
             {
-                throw new ArgumentNullException("thisString");
+                throw new ArgumentNullException(nameof(thisString));
             }
 
             long.TryParse(thisString, out long result);
@@ -455,12 +455,19 @@ namespace Pangolin
         {
             if (string.IsNullOrWhiteSpace(thisString))
             {
-                throw new ArgumentNullException("thisString");
+                throw new ArgumentNullException(nameof(thisString));
             }
 
             short.TryParse(thisString, out short result);
 
             return result;
+        }
+        #endregion
+
+        #region StringBuilder
+        public static bool IsEmpty(this StringBuilder thisStringBuilder)
+        {
+            return thisStringBuilder?.Length == 0;
         }
         #endregion
 

@@ -26,7 +26,7 @@ namespace Pangolin
         {
             bool isSuccess = false;
 
-            if (ConfigurationLayer.IsLiveEventLog && EventLog.SourceExists(ConfigurationLayer.EventLogSource))
+            if (EventLog.SourceExists(ConfigurationLayer.EventLogSource))
             {
                 try
                 {
@@ -52,7 +52,7 @@ namespace Pangolin
         {
             string eventLogEntries = string.Empty;
 
-            if (ConfigurationLayer.IsLiveEventLog && IsEventLogCreated())
+            if (IsEventLogCreated())
             {
                 try
                 {
@@ -128,7 +128,7 @@ namespace Pangolin
 
         private static void EventLogWrite(string message, EventLogEntryType eventLogEntryType)
         {
-            if (ConfigurationLayer.IsLiveEventLog && !string.IsNullOrWhiteSpace(message) && IsEventLogCreated())
+            if (!string.IsNullOrWhiteSpace(message) && IsEventLogCreated())
             {
                 try
                 {
@@ -267,7 +267,7 @@ namespace Pangolin
                 {
                     isSuccess = NetworkInterface.GetAllNetworkInterfaces().Any(x => (x.NetworkInterfaceType == NetworkInterfaceType.Ethernet || x.NetworkInterfaceType == NetworkInterfaceType.Ethernet3Megabit || x.NetworkInterfaceType == NetworkInterfaceType.FastEthernetFx || x.NetworkInterfaceType == NetworkInterfaceType.FastEthernetT) && x.OperationalStatus == OperationalStatus.Up);
                 }
-                catch (NetworkInformationException exc) { await ExceptionLayer.HandleAsync(exc); }
+                catch (NetworkInformationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
             }
 
             return isSuccess;
@@ -283,7 +283,7 @@ namespace Pangolin
                 {
                     isSuccess = NetworkInterface.GetAllNetworkInterfaces().Any(x => (x.NetworkInterfaceType == NetworkInterfaceType.Wman || x.NetworkInterfaceType == NetworkInterfaceType.Wwanpp || x.NetworkInterfaceType == NetworkInterfaceType.Wwanpp2) && x.OperationalStatus == OperationalStatus.Up);
                 }
-                catch (NetworkInformationException exc) { await ExceptionLayer.HandleAsync(exc); }
+                catch (NetworkInformationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
             }
 
             return isSuccess;
@@ -308,9 +308,9 @@ namespace Pangolin
                         PingReply pingReply = await ping.SendPingAsync(hostNameOrAddress);
                         isPingable = pingReply.Status == IPStatus.Success;
                     }
-                    catch (PingException exc) { await ExceptionLayer.HandleAsync(exc); }
-                    catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); }
-                    catch (NotSupportedException exc) { await ExceptionLayer.HandleAsync(exc); }
+                    catch (PingException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+                    catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+                    catch (NotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
                 }
             }
 
@@ -330,9 +330,9 @@ namespace Pangolin
                         PingReply pingReply = await ping.SendPingAsync(hostNameOrAddress, timeout);
                         isPingable = pingReply.Status == IPStatus.Success;
                     }
-                    catch (PingException exc) { await ExceptionLayer.HandleAsync(exc); }
-                    catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); }
-                    catch (NotSupportedException exc) { await ExceptionLayer.HandleAsync(exc); }
+                    catch (PingException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+                    catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+                    catch (NotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
                 }
             }
 
@@ -350,7 +350,7 @@ namespace Pangolin
                 {
                     isSuccess = NetworkInterface.GetAllNetworkInterfaces().Any(x => x.NetworkInterfaceType == NetworkInterfaceType.Ppp && x.NetworkInterfaceType != NetworkInterfaceType.Loopback && x.OperationalStatus == OperationalStatus.Up);
                 }
-                catch (NetworkInformationException exc) { await ExceptionLayer.HandleAsync(exc); }
+                catch (NetworkInformationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
             }
 
             return isSuccess;
@@ -366,7 +366,7 @@ namespace Pangolin
                 {
                     isSuccess = NetworkInterface.GetAllNetworkInterfaces().Any(x => x.NetworkInterfaceType == NetworkInterfaceType.Wireless80211 && x.OperationalStatus == OperationalStatus.Up);
                 }
-                catch (NetworkInformationException exc) { await ExceptionLayer.HandleAsync(exc); }
+                catch (NetworkInformationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
             }
 
             return isSuccess;
@@ -652,9 +652,9 @@ namespace Pangolin
             {
                 return Process.GetProcessesByName(Path.GetFileNameWithoutExtension(Assembly.GetEntryAssembly().Location)).Count() > 1;
             }
-            catch (NotSupportedException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (OverflowException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+            catch (NotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (OverflowException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
         }
         #endregion
 
@@ -739,8 +739,8 @@ namespace Pangolin
             {
                 return Environment.CurrentDirectory;
             }
-            catch (IOException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (SecurityException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+            catch (IOException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (SecurityException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
         }
 
         private static async Task<string> GetDomainName()
@@ -749,8 +749,8 @@ namespace Pangolin
             {
                 return Environment.UserDomainName;
             }
-            catch (PlatformNotSupportedException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+            catch (PlatformNotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
         }
 
         private static async Task<string> GetMachineName()
@@ -759,7 +759,7 @@ namespace Pangolin
             {
                 return Environment.MachineName;
             }
-            catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+            catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
         }
 
         private static async Task<string> GetOSVersion()
@@ -768,7 +768,7 @@ namespace Pangolin
             {
                 return Environment.OSVersion.VersionString;
             }
-            catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+            catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
         }
 
         public static TimeSpan GetUpTime()
@@ -787,8 +787,8 @@ namespace Pangolin
             {
                 return Environment.UserDomainName;
             }
-            catch (PlatformNotSupportedException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+            catch (PlatformNotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
         }
 
         private static async Task<string> GetUserName()
@@ -797,8 +797,8 @@ namespace Pangolin
             {
                 return Environment.UserName;
             }
-            catch (PlatformNotSupportedException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+            catch (PlatformNotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
         }
 
         private static long GetWorkingSet()

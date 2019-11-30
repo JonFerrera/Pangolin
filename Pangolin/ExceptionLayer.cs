@@ -17,24 +17,19 @@ namespace Pangolin
 {
     public static class ExceptionLayer
     {
-        [Flags]
-        private enum ExceptionFormat
-        {
-            Html,
-            Text,
-            Xml
-        }
+        private const char
+            _dash = '-',
+            _space = ' ';
 
-        private const char _dash = '-';
-        private const char _space = ' ';
+        private const int
+            _lineBreakSpace = 80,
+            _padRightSpace = 32;
 
-        private const int _lineBreakSpace = 80;
-        private const int _padRightSpace = 32;
+        private static readonly string
+            _indentation = new string(_space, _padRightSpace),
+            _lineBreak = new string(_dash, _lineBreakSpace);
 
-        private static readonly string _indentation = new string(_space, _padRightSpace);
-        private static readonly string _lineBreak = new string(_dash, _lineBreakSpace);
-
-        public static void Handle(Exception exception)
+        public static string Handle(Exception exception)
         {
             string exceptionText = WriteExceptionText(exception);
             DiagnosticsLayer.EventLogWriteError(exceptionText);
@@ -43,41 +38,74 @@ namespace Pangolin
             {
                 Console.WriteLine(exceptionText);
             }
-            finally { }
+            catch (IOException) { }
+
+            return exceptionText;
         }
-        
+
+        internal static async Task CoreHandleAsync(Exception exception)
+        {
+            string
+                exceptionText = Handle(exception),
+                body = WriteExceptionHtml(exception);
+
+            Task
+                logExceptionTask = FileLayer.LogExceptionCoreAsync(exceptionText),
+                coreMailTask = MailLayer.SendCoreMailAsync($"{nameof(ExceptionLayer)} Exception - {exception.GetType().Name}", body);
+
+            await Task.WhenAll(logExceptionTask, coreMailTask);
+        }
+
+        internal static async Task CoreHandleAsync(DbException exception, string query)
+        {
+            exception = AddCustomData(exception, query);
+
+            await CoreHandleAsync(exception);
+        }
+
+        internal static async Task CoreHandleAsync(DbException exception, string query, DbParameter[] dbParameters)
+        {
+            exception = AddCustomData(exception, query);
+            exception = AddCustomData(exception, dbParameters);
+
+            await CoreHandleAsync(exception);
+        }
+
         public static async Task HandleAsync(Exception exception)
         {
-            string exceptionText = WriteExceptionText(exception);
-            await FileLayer.LogExceptionAsync(exceptionText);
-            DiagnosticsLayer.EventLogWriteError(exceptionText);
+            string
+                exceptionText = Handle(exception),
+                body = WriteExceptionHtml(exception);
 
-            string body = WriteExceptionHtml(exception);
-            await MailLayer.SendDeveloperMailAsync($"ExceptionLayer Exception - {exception.GetType().Name}", body);
+            Task
+                logExceptionTask = FileLayer.LogExceptionAsync(exceptionText),
+                coreMailTask = MailLayer.SendCoreMailAsync($"{nameof(ExceptionLayer)} Exception - {exception.GetType().Name}", body);
+
+            await Task.WhenAll(logExceptionTask, coreMailTask);
         }
 
-        public static async Task HandleAsync(Exception exception, string query, DbParameter[] dbParameters)
+        public static async Task HandleAsync(DbException exception, string query)
         {
-            exception = AddDeveloperCustomData(exception, query);
-            exception = AddDeveloperCustomData(exception, dbParameters);
+            exception = AddCustomData(exception, query);
 
-            string exceptionText = WriteExceptionText(exception);
-            await FileLayer.LogExceptionAsync(exceptionText);
-            DiagnosticsLayer.EventLogWriteError(exceptionText);
+            await HandleAsync(exception);
+        }
 
-            string body = WriteExceptionHtml(exception);
-            await MailLayer.SendDeveloperMailAsync($"ExceptionLayer Exception - {exception.GetType().Name}", body);
+        public static async Task HandleAsync(DbException exception, string query, DbParameter[] dbParameters)
+        {
+            exception = AddCustomData(exception, query);
+            exception = AddCustomData(exception, dbParameters);
+
+            await HandleAsync(exception);
         }
         
-        private static string RenderException(Exception exception, ExceptionFormat exceptionFormat)
+        private static (string type, DateTime timestamp, string message, int hresult, string[] source, string[] targetSite, string[] stackTrace, IDictionary data, Dictionary<string, object> specificData, string[] helpLink, Exception[] innerExceptions) RenderException(Exception exception)
         {
-            string exceptionText = string.Empty;
-
             string type = exception.GetType().Name;
             DateTime timestamp = DateTime.Now;
             string message = exception.Message;
             int hresult = exception.HResult;
-            
+
             string[] source = null;
             if (!string.IsNullOrWhiteSpace(exception.Source))
             {
@@ -118,28 +146,94 @@ namespace Pangolin
             }
             Exception[] innerExceptions = innerExceptionList.ToArray();
 
-            switch (exceptionFormat)
-            {
-                case ExceptionFormat.Html:
-                    exceptionText = WriteExceptionHtml(type, timestamp, message, hresult, source, targetSite, stackTrace, data, specificData, helpLink, innerExceptions);
-                    break;
-                case ExceptionFormat.Text:
-                    exceptionText = WriteExceptionText(type, timestamp, message, hresult, source, targetSite, stackTrace, data, specificData, helpLink, innerExceptions);
-                    break;
-                case ExceptionFormat.Xml:
-                    exceptionText = WriteExceptionXml(type, timestamp, message, hresult, source, targetSite, stackTrace, data, specificData, helpLink, innerExceptions);
-                    break;
-                default:
-                    break;
-            }
-
-            return exceptionText;
+            return (type, timestamp, message, hresult, source, targetSite, stackTrace, data, specificData, helpLink, innerExceptions);
         }
+
+        #region HRESULT
+        public static (bool severity, bool reserved, bool customer, bool n, bool x, int facility, int code) ParseHresult(int hResult)
+        {
+            byte[] bytes = BitConverter.GetBytes(hResult);
+            BitArray bitArray = new BitArray(bytes);
+
+            bool severity = bitArray.Get(0);
+            bool reserved = bitArray.Get(1);
+            bool customer = bitArray.Get(2);
+            bool n = bitArray.Get(3);
+            bool x = bitArray.Get(4);
+
+            bool[] facilityBytes = new bool[]
+            {
+                bitArray.Get(5),
+                bitArray.Get(6),
+                bitArray.Get(7),
+                bitArray.Get(8),
+                bitArray.Get(9),
+                bitArray.Get(10),
+                bitArray.Get(11),
+                bitArray.Get(12),
+                bitArray.Get(13),
+                bitArray.Get(14),
+                bitArray.Get(15)
+            };
+
+            StringBuilder facilityBinary = new StringBuilder(11);
+            for (int i = 0; i < facilityBytes.Length; i++)
+            {
+                if (facilityBytes[i])
+                {
+                    facilityBinary.Append('1');
+                }
+                else
+                {
+                    facilityBinary.Append('0');
+                }
+            }
+            int facility = Convert.ToInt32(facilityBinary.ToString(), 2);
+
+            bool[] codeBytes = new bool[]
+            {
+                bitArray.Get(16),
+                bitArray.Get(17),
+                bitArray.Get(18),
+                bitArray.Get(19),
+                bitArray.Get(20),
+                bitArray.Get(21),
+                bitArray.Get(22),
+                bitArray.Get(23),
+                bitArray.Get(24),
+                bitArray.Get(25),
+                bitArray.Get(26),
+                bitArray.Get(27),
+                bitArray.Get(28),
+                bitArray.Get(29),
+                bitArray.Get(30),
+                bitArray.Get(31)
+            };
+
+            StringBuilder codeBinary = new StringBuilder(16);
+            for (int i = 0; i < codeBytes.Length; i++)
+            {
+                if (codeBytes[i])
+                {
+                    codeBinary.Append('1');
+                }
+                else
+                {
+                    codeBinary.Append('0');
+                }
+            }
+            int code = Convert.ToInt32(codeBinary.ToString(), 2);
+
+            return (severity, reserved, customer, n, x, facility, code);
+        }
+        #endregion
 
         #region Format Exception - Text
         private static string WriteExceptionText(Exception exception)
         {
-            return RenderException(exception, ExceptionFormat.Text);
+            (string type, DateTime timestamp, string message, int hresult, string[] source, string[] targetSite, string[] stackTrace, IDictionary data, Dictionary<string, object> specificData, string[] helpLink, Exception[] innerExceptions) = RenderException(exception);
+
+            return WriteExceptionText(type, timestamp, message, hresult, source, targetSite, stackTrace, data, specificData, helpLink, innerExceptions); ;
         }
 
         private static string WriteExceptionText(string type, DateTime timestamp, string message, int hresult, string[] source, string[] targetSite, string[] stackTrace, IDictionary data = null, Dictionary<string, object> specificData = null, string[] helpLink = null, Exception[] innerExceptions = null)
@@ -188,7 +282,15 @@ namespace Pangolin
                     }
                 }
 
-                exceptionText.AppendLine("HRESULT:".PadRight(_padRightSpace) + hresult.ToString());
+                (bool severity, bool reserved, bool customer, bool n, bool x, int facility, int code) = ParseHresult(hresult);
+                exceptionText.AppendLine("HRESULT:".PadRight(_padRightSpace) + "0x" + hresult.ToString("X8"));
+                exceptionText.AppendLine((ConfigurationLayer.Tab + "Severity:").PadRight(_padRightSpace) + severity);
+                exceptionText.AppendLine((ConfigurationLayer.Tab + "Reserved:").PadRight(_padRightSpace) + reserved);
+                exceptionText.AppendLine((ConfigurationLayer.Tab + "Customer:").PadRight(_padRightSpace) + customer);
+                exceptionText.AppendLine((ConfigurationLayer.Tab + "n:").PadRight(_padRightSpace) + n);
+                exceptionText.AppendLine((ConfigurationLayer.Tab + "x:").PadRight(_padRightSpace) + x);
+                exceptionText.AppendLine((ConfigurationLayer.Tab + "Facility:").PadRight(_padRightSpace) + facility);
+                exceptionText.AppendLine((ConfigurationLayer.Tab + "Code:").PadRight(_padRightSpace) + code);
 
                 if (source?.Length > 0)
                 {
@@ -246,7 +348,9 @@ namespace Pangolin
         #region Format Exception - Html
         private static string WriteExceptionHtml(Exception exception)
         {
-            return RenderException(exception, ExceptionFormat.Html);
+            (string type, DateTime timestamp, string message, int hresult, string[] source, string[] targetSite, string[] stackTrace, IDictionary data, Dictionary<string, object> specificData, string[] helpLink, Exception[] innerExceptions) = RenderException(exception);
+
+            return WriteExceptionHtml(type, timestamp, message, hresult, source, targetSite, stackTrace, data, specificData, helpLink, innerExceptions);
         }
 
         private static string WriteExceptionHtml(string type, DateTime timestamp, string message, int hresult, string[] source, string[] targetSite, string[] stackTrace, IDictionary data = null, Dictionary<string, object> specificData = null, string[] helpLink = null, Exception[] innerExceptions = null)
@@ -274,9 +378,9 @@ namespace Pangolin
                     htmlTextWriter.WriteAttribute("open", null);
                     htmlTextWriter.Write(HtmlTextWriter.TagRightChar);
                     htmlTextWriter.WriteFullBeginTag("summary");
-                    htmlTextWriter.WriteFullBeginTag("b");
+                    htmlTextWriter.WriteFullBeginTag("strong");
                     htmlTextWriter.Write("Message");
-                    htmlTextWriter.WriteEndTag("b");
+                    htmlTextWriter.WriteEndTag("strong");
                     htmlTextWriter.WriteEndTag("summary");
                     htmlTextWriter.WriteFullBeginTag("p");
                     htmlTextWriter.Write(message);
@@ -289,9 +393,9 @@ namespace Pangolin
                         htmlTextWriter.WriteAttribute("open", null);
                         htmlTextWriter.Write(HtmlTextWriter.TagRightChar);
                         htmlTextWriter.WriteFullBeginTag("summary");
-                        htmlTextWriter.WriteFullBeginTag("b");
+                        htmlTextWriter.WriteFullBeginTag("strong");
                         htmlTextWriter.Write("Data");
-                        htmlTextWriter.WriteEndTag("b");
+                        htmlTextWriter.WriteEndTag("strong");
                         htmlTextWriter.WriteEndTag("summary");
 
                         foreach (DictionaryEntry entry in data)
@@ -300,9 +404,9 @@ namespace Pangolin
                             {
                                 if (string.Equals(entry.Key.ToString(), "Parameters") && entry.Value is DbParameter[] dbParameters)
                                 {
-                                    htmlTextWriter.WriteFullBeginTag("b");
+                                    htmlTextWriter.WriteFullBeginTag("strong");
                                     htmlTextWriter.Write("Parameters");
-                                    htmlTextWriter.WriteEndTag("b");
+                                    htmlTextWriter.WriteEndTag("strong");
 
                                     if (dbParameters?.Length > 0)
                                     {
@@ -323,9 +427,9 @@ namespace Pangolin
                                 }
                                 else
                                 {
-                                    htmlTextWriter.WriteFullBeginTag("b");
+                                    htmlTextWriter.WriteFullBeginTag("strong");
                                     htmlTextWriter.Write("Query");
-                                    htmlTextWriter.WriteEndTag("b");
+                                    htmlTextWriter.WriteEndTag("strong");
 
                                     htmlTextWriter.WriteFullBeginTag("ul");
                                     htmlTextWriter.WriteFullBeginTag("li");
@@ -347,9 +451,9 @@ namespace Pangolin
                         htmlTextWriter.WriteAttribute("open", null);
                         htmlTextWriter.Write(HtmlTextWriter.TagRightChar);
                         htmlTextWriter.WriteFullBeginTag("summary");
-                        htmlTextWriter.WriteFullBeginTag("b");
+                        htmlTextWriter.WriteFullBeginTag("strong");
                         htmlTextWriter.Write("Specific Data");
-                        htmlTextWriter.WriteEndTag("b");
+                        htmlTextWriter.WriteEndTag("strong");
                         htmlTextWriter.WriteEndTag("summary");
 
                         htmlTextWriter.WriteFullBeginTag("ul");
@@ -371,12 +475,12 @@ namespace Pangolin
 
                     htmlTextWriter.WriteFullBeginTag("details");
                     htmlTextWriter.WriteFullBeginTag("summary");
-                    htmlTextWriter.WriteFullBeginTag("b");
+                    htmlTextWriter.WriteFullBeginTag("strong");
                     htmlTextWriter.Write("HRESULT");
-                    htmlTextWriter.WriteEndTag("b");
+                    htmlTextWriter.WriteEndTag("strong");
                     htmlTextWriter.WriteEndTag("summary");
                     htmlTextWriter.WriteFullBeginTag("code");
-                    htmlTextWriter.Write(hresult.ToString());
+                    htmlTextWriter.Write("0x" + hresult.ToString("X8"));
                     htmlTextWriter.WriteEndTag("code");
                     htmlTextWriter.WriteEndTag("details");
 
@@ -386,9 +490,9 @@ namespace Pangolin
                         htmlTextWriter.WriteAttribute("open", null);
                         htmlTextWriter.Write(HtmlTextWriter.TagRightChar);
                         htmlTextWriter.WriteFullBeginTag("summary");
-                        htmlTextWriter.WriteFullBeginTag("b");
+                        htmlTextWriter.WriteFullBeginTag("strong");
                         htmlTextWriter.Write("Source");
-                        htmlTextWriter.WriteEndTag("b");
+                        htmlTextWriter.WriteEndTag("strong");
                         htmlTextWriter.WriteEndTag("summary");
 
                         for (int i = 0; i < source.Length; i++)
@@ -407,9 +511,9 @@ namespace Pangolin
                         htmlTextWriter.WriteAttribute("open", null);
                         htmlTextWriter.Write(HtmlTextWriter.TagRightChar);
                         htmlTextWriter.WriteFullBeginTag("summary");
-                        htmlTextWriter.WriteFullBeginTag("b");
+                        htmlTextWriter.WriteFullBeginTag("strong");
                         htmlTextWriter.Write("Target Site");
-                        htmlTextWriter.WriteEndTag("b");
+                        htmlTextWriter.WriteEndTag("strong");
                         htmlTextWriter.WriteEndTag("summary");
 
                         for (int i = 0; i < targetSite.Length; i++)
@@ -428,9 +532,9 @@ namespace Pangolin
                         htmlTextWriter.WriteAttribute("open", null);
                         htmlTextWriter.Write(HtmlTextWriter.TagRightChar);
                         htmlTextWriter.WriteFullBeginTag("summary");
-                        htmlTextWriter.WriteFullBeginTag("b");
+                        htmlTextWriter.WriteFullBeginTag("strong");
                         htmlTextWriter.Write("Stack Trace");
-                        htmlTextWriter.WriteEndTag("b");
+                        htmlTextWriter.WriteEndTag("strong");
                         htmlTextWriter.WriteEndTag("summary");
 
                         for (int i = 0; i < stackTrace.Length; i++)
@@ -449,9 +553,9 @@ namespace Pangolin
                         htmlTextWriter.WriteAttribute("open", null);
                         htmlTextWriter.Write(HtmlTextWriter.TagRightChar);
                         htmlTextWriter.WriteFullBeginTag("summary");
-                        htmlTextWriter.WriteFullBeginTag("b");
+                        htmlTextWriter.WriteFullBeginTag("strong");
                         htmlTextWriter.Write("Stack Trace");
-                        htmlTextWriter.WriteEndTag("b");
+                        htmlTextWriter.WriteEndTag("strong");
                         htmlTextWriter.WriteEndTag("summary");
 
                         for (int i = 0; i < helpLink.Length; i++)
@@ -470,9 +574,9 @@ namespace Pangolin
                         htmlTextWriter.WriteAttribute("open", null);
                         htmlTextWriter.Write(HtmlTextWriter.TagRightChar);
                         htmlTextWriter.WriteFullBeginTag("summary");
-                        htmlTextWriter.WriteFullBeginTag("b");
+                        htmlTextWriter.WriteFullBeginTag("strong");
                         htmlTextWriter.Write("Inner Exceptions");
-                        htmlTextWriter.WriteEndTag("b");
+                        htmlTextWriter.WriteEndTag("strong");
                         htmlTextWriter.WriteEndTag("summary");
 
                         htmlTextWriter.WriteFullBeginTag("ol");
@@ -498,7 +602,9 @@ namespace Pangolin
         #region Format Exception - XML
         private static string WriteExceptionXml(Exception exception)
         {
-            return RenderException(exception, ExceptionFormat.Xml);
+            (string type, DateTime timestamp, string message, int hresult, string[] source, string[] targetSite, string[] stackTrace, IDictionary data, Dictionary<string, object> specificData, string[] helpLink, Exception[] innerExceptions) = RenderException(exception);
+
+            return WriteExceptionXml(type, timestamp, message, hresult, source, targetSite, stackTrace, data, specificData, helpLink, innerExceptions);
         }
 
         private static string WriteExceptionXml(string type, DateTime timestamp, string message, int hresult, string[] source, string[] targetSite, string[] stackTrace, IDictionary data = null, Dictionary<string, object> specificData = null, string[] helpLink = null, Exception[] innerExceptions = null)
@@ -511,7 +617,7 @@ namespace Pangolin
                 xmlWriter.WriteStartElement("exception");
                 xmlWriter.WriteAttributeString("type", type);
                 xmlWriter.WriteAttributeString("timestamp", timestamp.ToString(ConfigurationLayer.DateTimeLongFormat));
-                xmlWriter.WriteAttributeString("HRESULT", hresult.ToString());
+                xmlWriter.WriteAttributeString("HRESULT", "0x" + hresult.ToString("X8"));
 
                 xmlWriter.WriteStartElement("message");
                 xmlWriter.WriteString(message);
@@ -644,56 +750,56 @@ namespace Pangolin
         #endregion
 
         #region Custom Exception Data
-        private static Exception AddDeveloperCustomData(Exception exception, string query)
+        private static DbException AddCustomData(DbException dbException, string query)
         {
-            if (exception == null)
+            if (dbException == null)
             {
-                throw new ArgumentNullException("exception");
+                throw new ArgumentNullException(nameof(dbException));
             }
             if (string.IsNullOrWhiteSpace(query))
             {
-                throw new ArgumentNullException(query);
+                throw new ArgumentNullException(nameof(query));
             }
-            if (exception.Data.IsReadOnly)
+            if (dbException.Data.IsReadOnly)
             {
-                throw new InvalidOperationException("The Exception.Data property is read-only.");
+                throw new InvalidOperationException($"The {nameof(dbException)}.{nameof(dbException.Data)} property is read-only.");
             }
-            if (exception.Data.Contains("Query"))
+            if (dbException.Data.Contains("Query"))
             {
                 throw new InvalidOperationException("The 'Query' parameter has already been added.");
             }
 
-            exception.Data.Add("Query", query);
+            dbException.Data.Add("Query", query);
 
-            return exception;
+            return dbException;
         }
 
-        private static Exception AddDeveloperCustomData(Exception exception, DbParameter[] dbParameters)
+        private static DbException AddCustomData(DbException dbException, DbParameter[] dbParameters)
         {
-            if (exception == null)
+            if (dbException == null)
             {
-                throw new ArgumentNullException("exception");
+                throw new ArgumentNullException(nameof(dbException));
             }
             if (dbParameters == null)
             {
-                throw new ArgumentNullException("dbParameters");
+                throw new ArgumentNullException(nameof(dbParameters));
             }
             if (dbParameters.Length < 1)
             {
-                throw new ArgumentException("dbParameters has no elements.");
+                throw new ArgumentException($"{nameof(dbParameters)} has no elements.");
             }
-            if (exception.Data.IsReadOnly)
+            if (dbException.Data.IsReadOnly)
             {
-                throw new InvalidOperationException("The Exception.Data property is read-only.");
+                throw new InvalidOperationException($"The {nameof(dbException)}.{nameof(dbException.Data)} property is read-only.");
             }
-            if (exception.Data.Contains("Parameters"))
+            if (dbException.Data.Contains("Parameters"))
             {
                 throw new InvalidOperationException("The 'Parameters' parameter has already been added.");
             }
 
-            exception.Data.Add("Parameters", dbParameters);
+            dbException.Data.Add("Parameters", dbParameters);
 
-            return exception;
+            return dbException;
         }
         
         private static Dictionary<string, object> ExceptionSpecificData(Exception exception)

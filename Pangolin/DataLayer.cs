@@ -32,7 +32,7 @@ namespace Pangolin
             if (connectionString == null) { throw new ArgumentNullException(nameof(connectionString)); }
             else if (string.Equals(connectionString, string.Empty)) { throw new ArgumentException($"{nameof(connectionString)} cannot be an empty string.",nameof(connectionString)); }
             else if (string.Equals(connectionString.Trim(), string.Empty)) { throw new ArgumentException($"{nameof(connectionString)} cannot be a white-space string.", nameof(connectionString)); }
-
+            
             bool isOdbcConnectionString = false;
 
             try
@@ -40,7 +40,7 @@ namespace Pangolin
                 new OdbcConnectionStringBuilder(connectionString);
                 isOdbcConnectionString = true;
             }
-            catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+            catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
             return isOdbcConnectionString;
         }
@@ -58,7 +58,7 @@ namespace Pangolin
                 new OleDbConnectionStringBuilder(connectionString);
                 isOleDbConnectionString = true;
             }
-            catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+            catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
             return isOleDbConnectionString;
         }
@@ -76,9 +76,9 @@ namespace Pangolin
                 new SqlConnectionStringBuilder(connectionString);
                 isSqlConnectionString = true;
             }
-            catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (FormatException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (KeyNotFoundException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+            catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (FormatException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (KeyNotFoundException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
             return isSqlConnectionString;
         }
@@ -106,9 +106,9 @@ namespace Pangolin
                         throw new InvalidOperationException($"{nameof(commandText)} cannot be parsed.");
                     }
                 }
-                catch (OverflowException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (OverflowException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
             }
-            catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+            catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
             return commandType;
         }
@@ -158,18 +158,18 @@ namespace Pangolin
                                 dataTable.Load(dbDataReader);
                             }
                         }
-                        catch (DbException exc) { await ExceptionLayer.HandleAsync(exc, query, null); throw; }
-                        catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (DbException exc) { await ExceptionLayer.CoreHandleAsync(exc, query); throw; }
+                        catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
                         try
                         {
                             odbcTransaction.Commit();
                         }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (Exception exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (Exception exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
                     }
                 }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
                 return dataTable;
             }
@@ -205,18 +205,18 @@ namespace Pangolin
                                 dataTable.Load(dbDataReader);
                             }
                         }
-                        catch (DbException exc) { await ExceptionLayer.HandleAsync(exc, query, odbcParameters); throw; }
-                        catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (DbException exc) { await ExceptionLayer.CoreHandleAsync(exc, query, odbcParameters); throw; }
+                        catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
                         try
                         {
                             odbcTransaction.Commit();
                         }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (Exception exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (Exception exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
                     }
                 }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
                 return dataTable;
             }
         }
@@ -243,18 +243,18 @@ namespace Pangolin
                         {
                             odbcDataAdapter.Fill(dataSet);
                         }
-                        catch (DbException exc) { await ExceptionLayer.HandleAsync(exc, query, null); throw; }
-                        catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (DbException exc) { await ExceptionLayer.CoreHandleAsync(exc, query); throw; }
+                        catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
                         try
                         {
                             odbcTransaction.Commit();
                         }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (Exception exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (Exception exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
                     }
                 }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
                 if (commandType == CommandType.StoredProcedure)
                 {
@@ -295,19 +295,19 @@ namespace Pangolin
                             {
                                 odbcDataAdapter.Fill(dataSet);
                             }
-                            catch (DbException exc) { await ExceptionLayer.HandleAsync(exc, query, odbcParameters); throw; }
-                            catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                            catch (DbException exc) { await ExceptionLayer.CoreHandleAsync(exc, query, odbcParameters); throw; }
+                            catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
                         }
 
                         try
                         {
                             odbcTransaction.Commit();
                         }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (Exception exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (Exception exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
                     }
                 }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
                 if (commandType == CommandType.StoredProcedure)
                 {
@@ -343,18 +343,18 @@ namespace Pangolin
                         {
                             datum = await odbcCmd.ExecuteScalarAsync(cancellationToken);
                         }
-                        catch (DbException exc) { await ExceptionLayer.HandleAsync(exc, query, null); throw; }
-                        catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (DbException exc) { await ExceptionLayer.CoreHandleAsync(exc, query); throw; }
+                        catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
                         try
                         {
                             odbcTrans.Commit();
                         }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (Exception exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (Exception exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
                     }
                 }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
             }
 
             return datum;
@@ -386,18 +386,18 @@ namespace Pangolin
                         {
                             datum = await odbcCmd.ExecuteScalarAsync(cancellationToken);
                         }
-                        catch (DbException exc) { await ExceptionLayer.HandleAsync(exc, query, odbcParameters); throw; }
-                        catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (DbException exc) { await ExceptionLayer.CoreHandleAsync(exc, query, odbcParameters); throw; }
+                        catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
                         try
                         {
                             odbcTrans.Commit();
                         }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (Exception exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (Exception exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
                     }
                 }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
             }
 
             return datum;
@@ -427,17 +427,17 @@ namespace Pangolin
                         {
                             rowsAffected += await odbcCommand.ExecuteNonQueryAsync(cancellationToken);
                         }
-                        catch (DbException exc) { await ExceptionLayer.HandleAsync(exc, query, null); throw; }
+                        catch (DbException exc) { await ExceptionLayer.CoreHandleAsync(exc, query); throw; }
 
                         try
                         {
                             odbcTransaction.Commit();
                         }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (Exception exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (Exception exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
                     }
                 }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
             }
 
             return rowsAffected;
@@ -469,10 +469,10 @@ namespace Pangolin
                                 {
                                     rowsAffected += await odbcCommand.ExecuteNonQueryAsync(cancellationToken);
                                 }
-                                catch (DbException exc) { await ExceptionLayer.HandleAsync(exc, query, null); throw; }
-                                catch (InvalidCastException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                                catch (IOException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                                catch (DbException exc) { await ExceptionLayer.CoreHandleAsync(exc, query); throw; }
+                                catch (InvalidCastException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                                catch (IOException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
                             }
                         }
 
@@ -480,11 +480,11 @@ namespace Pangolin
                         {
                             odbcTransaction.Commit();
                         }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (Exception exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (Exception exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
                     }
                 }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
             }
 
             return rowsAffected;
@@ -516,17 +516,17 @@ namespace Pangolin
                         {
                             rowsAffected += await odbcCommand.ExecuteNonQueryAsync(cancellationToken);
                         }
-                        catch (DbException exc) { await ExceptionLayer.HandleAsync(exc, query, null); throw; }
+                        catch (DbException exc) { await ExceptionLayer.CoreHandleAsync(exc, query); throw; }
 
                         try
                         {
                             odbcTransaction.Commit();
                         }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (Exception exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (Exception exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
                     }
                 }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
             }
 
             return rowsAffected;
@@ -563,7 +563,7 @@ namespace Pangolin
                                     {
                                         rowsAffected += await odbcCommand.ExecuteNonQueryAsync(cancellationToken);
                                     }
-                                    catch (DbException exc) { await ExceptionLayer.HandleAsync(exc, query, odbcParameters); throw; }
+                                    catch (DbException exc) { await ExceptionLayer.CoreHandleAsync(exc, query, odbcParameters); throw; }
                                 }
                             }
                         }
@@ -572,11 +572,11 @@ namespace Pangolin
                         {
                             odbcTransaction.Commit();
                         }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (Exception exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (Exception exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
                     }
                 }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
             }
 
             return rowsAffected;
@@ -604,17 +604,17 @@ namespace Pangolin
                         {
                             datum = await odbcCommand.ExecuteScalarAsync(cancellationToken);
                         }
-                        catch (DbException exc) { await ExceptionLayer.HandleAsync(exc, query, null); throw; }
+                        catch (DbException exc) { await ExceptionLayer.CoreHandleAsync(exc, query); throw; }
 
                         try
                         {
                             odbcTransaction.Commit();
                         }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (Exception exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (Exception exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
                     }
                 }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
             }
 
             return datum;
@@ -646,17 +646,17 @@ namespace Pangolin
                         {
                             datum = await odbcCommand.ExecuteScalarAsync(cancellationToken);
                         }
-                        catch (DbException exc) { await ExceptionLayer.HandleAsync(exc, query, null); throw; }
+                        catch (DbException exc) { await ExceptionLayer.CoreHandleAsync(exc, query, odbcParameters); throw; }
 
                         try
                         {
                             odbcTransaction.Commit();
                         }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (Exception exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (Exception exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
                     }
                 }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
             }
 
             return datum;
@@ -688,19 +688,19 @@ namespace Pangolin
                         {
                             await odbcCommand.ExecuteNonQueryAsync(cancellationToken);
                         }
-                        catch (DbException exc) { await ExceptionLayer.HandleAsync(exc, query, odbcParameters); throw; }
+                        catch (DbException exc) { await ExceptionLayer.CoreHandleAsync(exc, query, odbcParameters); throw; }
 
                         try
                         {
                             odbcTransaction.Commit();
                         }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (Exception exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (Exception exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
-                        data = odbcParameters.Where(x => x.Direction == ParameterDirection.ReturnValue || x.Direction == ParameterDirection.Output || x.Direction == ParameterDirection.InputOutput).ToArray();
+                        data = odbcParameters.Where(odbcParameter => odbcParameter.Direction == ParameterDirection.ReturnValue || odbcParameter.Direction == ParameterDirection.Output || odbcParameter.Direction == ParameterDirection.InputOutput).ToArray();
                     }
                 }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
             }
 
             return data;
@@ -750,18 +750,18 @@ namespace Pangolin
                                 dataTable.Load(dbDataReader);
                             }
                         }
-                        catch (DbException exc) { await ExceptionLayer.HandleAsync(exc, query, null); throw; }
-                        catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (DbException exc) { await ExceptionLayer.CoreHandleAsync(exc, query); throw; }
+                        catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
                         try
                         {
                             oleDbTransaction.Commit();
                         }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (Exception exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (Exception exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
                     }
                 }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
                 return dataTable;
             }
@@ -797,18 +797,18 @@ namespace Pangolin
                                 dataTable.Load(dbDataReader);
                             }
                         }
-                        catch (DbException exc) { await ExceptionLayer.HandleAsync(exc, query, oleDbParameters); throw; }
-                        catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (DbException exc) { await ExceptionLayer.CoreHandleAsync(exc, query, oleDbParameters); throw; }
+                        catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
                         try
                         {
                             oleDbTransaction.Commit();
                         }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (Exception exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (Exception exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
                     }
                 }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
                 return dataTable;
             }
@@ -836,18 +836,18 @@ namespace Pangolin
                         {
                             oleDbDataAdapter.Fill(dataSet);
                         }
-                        catch (DbException exc) { await ExceptionLayer.HandleAsync(exc, query, null); throw; }
-                        catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (DbException exc) { await ExceptionLayer.CoreHandleAsync(exc, query); throw; }
+                        catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
                         try
                         {
                             oleDbTransaction.Commit();
                         }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (Exception exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (Exception exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
                     }
                 }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
                 if (commandType == CommandType.StoredProcedure)
                 {
@@ -889,18 +889,18 @@ namespace Pangolin
                                 oleDbDataAdapter.Fill(dataSet);
                             }
                         }
-                        catch (DbException exc) { await ExceptionLayer.HandleAsync(exc, query, oleDbParameters); throw; }
-                        catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (DbException exc) { await ExceptionLayer.CoreHandleAsync(exc, query, oleDbParameters); throw; }
+                        catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
                         try
                         {
                             oleDbTransaction.Commit();
                         }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (Exception exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (Exception exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
                     }
                 }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
                 if (commandType == CommandType.StoredProcedure)
                 {
@@ -936,18 +936,18 @@ namespace Pangolin
                         {
                             datum = await oleDbCommand.ExecuteScalarAsync(cancellationToken);
                         }
-                        catch (DbException exc) { await ExceptionLayer.HandleAsync(exc, query, null); throw; }
-                        catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (DbException exc) { await ExceptionLayer.CoreHandleAsync(exc, query); throw; }
+                        catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
                         try
                         {
                             oleDbTransaction.Commit();
                         }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (Exception exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (Exception exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
                     }
                 }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
                 return datum;
             }
@@ -979,18 +979,18 @@ namespace Pangolin
                         {
                             datum = await oleDbCommand.ExecuteScalarAsync(cancellationToken);
                         }
-                        catch (DbException exc) { await ExceptionLayer.HandleAsync(exc, query, oleDbParameters); throw; }
-                        catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (DbException exc) { await ExceptionLayer.CoreHandleAsync(exc, query, oleDbParameters); throw; }
+                        catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
                         try
                         {
                             oleDbTransaction.Commit();
                         }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (Exception exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (Exception exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
                     }
                 }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
                 return datum;
             }
@@ -1020,17 +1020,17 @@ namespace Pangolin
                         {
                             rowsAffected += await oleDbCommand.ExecuteNonQueryAsync(cancellationToken);
                         }
-                        catch (DbException exc) { await ExceptionLayer.HandleAsync(exc, query, null); throw; }
+                        catch (DbException exc) { await ExceptionLayer.CoreHandleAsync(exc, query); throw; }
 
                         try
                         {
                             oleDbTransaction.Commit();
                         }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (Exception exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (Exception exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
                     }
                 }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
                 return rowsAffected;
             }
@@ -1062,10 +1062,10 @@ namespace Pangolin
                                 {
                                     rowsAffected += await oleDbCommand.ExecuteNonQueryAsync(cancellationToken);
                                 }
-                                catch (DbException exc) { await ExceptionLayer.HandleAsync(exc, query, null); throw; }
-                                catch (InvalidCastException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                                catch (IOException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                                catch (DbException exc) { await ExceptionLayer.CoreHandleAsync(exc, query); throw; }
+                                catch (InvalidCastException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                                catch (IOException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
                             }
                         }
 
@@ -1073,11 +1073,11 @@ namespace Pangolin
                         {
                             oleDbTransaction.Commit();
                         }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (Exception exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (Exception exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
                     }
                 }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
             }
 
             return rowsAffected;
@@ -1109,17 +1109,17 @@ namespace Pangolin
                         {
                             rowsAffected += await oleDbCommand.ExecuteNonQueryAsync(cancellationToken);
                         }
-                        catch (DbException exc) { await ExceptionLayer.HandleAsync(exc, query, oleDbParameters); throw; }
+                        catch (DbException exc) { await ExceptionLayer.CoreHandleAsync(exc, query, oleDbParameters); throw; }
 
                         try
                         {
                             oleDbTransaction.Commit();
                         }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (Exception exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (Exception exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
                     }
                 }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
                 return rowsAffected;
             }
@@ -1156,7 +1156,7 @@ namespace Pangolin
                                     {
                                         rowsAffected += await oleDbCommand.ExecuteNonQueryAsync(cancellationToken);
                                     }
-                                    catch (DbException exc) { await ExceptionLayer.HandleAsync(exc, query, oleDbParameters); throw; }
+                                    catch (DbException exc) { await ExceptionLayer.CoreHandleAsync(exc, query, oleDbParameters); throw; }
                                 }
                             }
                         }
@@ -1165,11 +1165,11 @@ namespace Pangolin
                         {
                             oleDbTransaction.Commit();
                         }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (Exception exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (Exception exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
                     }
                 }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
             }
 
             return rowsAffected;
@@ -1197,17 +1197,17 @@ namespace Pangolin
                         {
                             datum = await oleDbCommand.ExecuteScalarAsync(cancellationToken);
                         }
-                        catch (DbException exc) { await ExceptionLayer.HandleAsync(exc, query, null); throw; }
+                        catch (DbException exc) { await ExceptionLayer.CoreHandleAsync(exc, query); throw; }
 
                         try
                         {
                             oleDbTransaction.Commit();
                         }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (Exception exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (Exception exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
                     }
                 }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
                 return datum;
             }
@@ -1239,17 +1239,17 @@ namespace Pangolin
                         {
                             datum = await oleDbCommand.ExecuteScalarAsync(cancellationToken);
                         }
-                        catch (DbException exc) { await ExceptionLayer.HandleAsync(exc, query, oleDbParameters); throw; }
+                        catch (DbException exc) { await ExceptionLayer.CoreHandleAsync(exc, query, oleDbParameters); throw; }
 
                         try
                         {
                             oleDbTransaction.Commit();
                         }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (Exception exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (Exception exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
                     }
                 }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
                 return datum;
             }
@@ -1281,19 +1281,19 @@ namespace Pangolin
                         {
                             await oleDbCommand.ExecuteNonQueryAsync(cancellationToken);
                         }
-                        catch (DbException exc) { await ExceptionLayer.HandleAsync(exc, query, null); throw; }
+                        catch (DbException exc) { await ExceptionLayer.CoreHandleAsync(exc, query, oleDbParameters); throw; }
 
                         try
                         {
                             oleDbTransaction.Commit();
                         }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (Exception exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (Exception exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
-                        data = oleDbParameters.Where(x => x.Direction == ParameterDirection.ReturnValue || x.Direction == ParameterDirection.Output || x.Direction == ParameterDirection.InputOutput).ToArray();
+                        data = oleDbParameters.Where(oleDbParameter => oleDbParameter.Direction == ParameterDirection.ReturnValue || oleDbParameter.Direction == ParameterDirection.Output || oleDbParameter.Direction == ParameterDirection.InputOutput).ToArray();
                     }
                 }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
             }
 
             return data;
@@ -1319,7 +1319,7 @@ namespace Pangolin
         
         public static async Task<DataTable> SQLReadDataTableAsync(string connectionString, string query, CancellationToken cancellationToken)
         {
-            if (!await IsOleDbConnectionStringAsync(connectionString)) { throw new ArgumentException($"{nameof(connectionString)} is not a valid SQL connection string.", nameof(connectionString)); }
+            if (!await IsSqlConnectionStringAsync(connectionString)) { throw new ArgumentException($"{nameof(connectionString)} is not a valid SQL connection string.", nameof(connectionString)); }
             if (query == null) { throw new ArgumentNullException(nameof(query)); }
 
             using (DataTable dataTable = new DataTable())
@@ -1343,22 +1343,22 @@ namespace Pangolin
                                 dataTable.Load(sqlDataReader);
                             }
                         }
-                        catch (SqlException exc) { await ExceptionLayer.HandleAsync(exc, query, null); throw; }
-                        catch (InvalidCastException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (IOException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (SqlException exc) { await ExceptionLayer.CoreHandleAsync(exc, query); throw; }
+                        catch (InvalidCastException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (IOException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
                         try
                         {
                             sqlTransaction.Commit();
                         }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (Exception exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (Exception exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
                     }
                 }
-                catch (SqlException exc) { await ExceptionLayer.HandleAsync(exc, query, null); throw; }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (SqlException exc) { await ExceptionLayer.CoreHandleAsync(exc, query); throw; }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
                 return dataTable;
             }
@@ -1366,7 +1366,7 @@ namespace Pangolin
         
         public static async Task<DataTable> SQLReadDataTableAsync(string connectionString, string query, SqlParameter[] sqlParameters, CancellationToken cancellationToken)
         {
-            if (!await IsOleDbConnectionStringAsync(connectionString)) { throw new ArgumentException($"{nameof(connectionString)} is not a valid SQL connection string.", nameof(connectionString)); }
+            if (!await IsSqlConnectionStringAsync(connectionString)) { throw new ArgumentException($"{nameof(connectionString)} is not a valid SQL connection string.", nameof(connectionString)); }
             if (query == null) { throw new ArgumentNullException(nameof(query)); }
             if (sqlParameters == null) { throw new ArgumentNullException(nameof(sqlParameters)); }
             else if (sqlParameters.Length < 1) { throw new ArgumentException($"{nameof(sqlParameters)} contains no parameters.", nameof(sqlParameters)); }
@@ -1394,22 +1394,22 @@ namespace Pangolin
                                 dataTable.Load(sqlDataReader);
                             }
                         }
-                        catch (SqlException exc) { await ExceptionLayer.HandleAsync(exc, query, sqlParameters); throw; }
-                        catch (InvalidCastException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (IOException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (SqlException exc) { await ExceptionLayer.CoreHandleAsync(exc, query, sqlParameters); throw; }
+                        catch (InvalidCastException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (IOException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
                         try
                         {
                             sqlTransaction.Commit();
                         }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (Exception exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (Exception exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
                     }
                 }
-                catch (SqlException exc) { await ExceptionLayer.HandleAsync(exc, query, null); throw; }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (SqlException exc) { await ExceptionLayer.CoreHandleAsync(exc, query, sqlParameters); throw; }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
                 return dataTable;
             }
@@ -1417,7 +1417,7 @@ namespace Pangolin
 
         public static async Task<DataSet> SQLReadDataSetAsync(string connectionString, string query, CancellationToken cancellationToken)
         {
-            if (!await IsOleDbConnectionStringAsync(connectionString)) { throw new ArgumentException($"{nameof(connectionString)} is not a valid SQL connection string.", nameof(connectionString)); }
+            if (!await IsSqlConnectionStringAsync(connectionString)) { throw new ArgumentException($"{nameof(connectionString)} is not a valid SQL connection string.", nameof(connectionString)); }
             if (query == null) { throw new ArgumentNullException(nameof(query)); }
 
             using (DataSet dataSet = new DataSet())
@@ -1437,18 +1437,18 @@ namespace Pangolin
                         {
                             sqlDataAdapter.Fill(dataSet);
                         }
-                        catch (SqlException exc) { await ExceptionLayer.HandleAsync(exc, query, null); throw; }
+                        catch (SqlException exc) { await ExceptionLayer.CoreHandleAsync(exc, query); throw; }
 
                         try
                         {
                             sqlTransaction.Commit();
                         }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (Exception exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (Exception exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
                     }
                 }
-                catch (SqlException exc) { await ExceptionLayer.HandleAsync(exc, query, null); throw; }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (SqlException exc) { await ExceptionLayer.CoreHandleAsync(exc, query); throw; }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
                 if (commandType == CommandType.StoredProcedure)
                 {
@@ -1464,7 +1464,7 @@ namespace Pangolin
         
         public static async Task<DataSet> SQLReadDataSetAsync(string connectionString, string query, SqlParameter[] sqlParameters, CancellationToken cancellationToken)
         {
-            if (!await IsOleDbConnectionStringAsync(connectionString)) { throw new ArgumentException($"{nameof(connectionString)} is not a valid SQL connection string.", nameof(connectionString)); }
+            if (!await IsSqlConnectionStringAsync(connectionString)) { throw new ArgumentException($"{nameof(connectionString)} is not a valid SQL connection string.", nameof(connectionString)); }
             if (query == null) { throw new ArgumentNullException(nameof(query)); }
             if (sqlParameters == null) { throw new ArgumentNullException(nameof(sqlParameters)); }
             else if (sqlParameters.Length < 1) { throw new ArgumentException($"{nameof(sqlParameters)} contains no parameters.", nameof(sqlParameters)); }
@@ -1490,18 +1490,18 @@ namespace Pangolin
                                 sqlDataAdapter.Fill(dataSet);
                             }
                         }
-                        catch (SqlException exc) { await ExceptionLayer.HandleAsync(exc, query, sqlParameters); throw; }
+                        catch (SqlException exc) { await ExceptionLayer.CoreHandleAsync(exc, query, sqlParameters); throw; }
 
                         try
                         {
                             sqlTransaction.Commit();
                         }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (Exception exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (Exception exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
                     }
                 }
-                catch (SqlException exc) { await ExceptionLayer.HandleAsync(exc, query, sqlParameters); throw; }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (SqlException exc) { await ExceptionLayer.CoreHandleAsync(exc, query, sqlParameters); throw; }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
                 if (commandType == CommandType.StoredProcedure)
                 {
@@ -1517,7 +1517,7 @@ namespace Pangolin
         
         public static async Task<object> SQLReadDatumAsync(string connectionString, string query, CancellationToken cancellationToken)
         {
-            if (!await IsOleDbConnectionStringAsync(connectionString)) { throw new ArgumentException($"{nameof(connectionString)} is not a valid SQL connection string.", nameof(connectionString)); }
+            if (!await IsSqlConnectionStringAsync(connectionString)) { throw new ArgumentException($"{nameof(connectionString)} is not a valid SQL connection string.", nameof(connectionString)); }
             if (query == null) { throw new ArgumentNullException(nameof(query)); }
 
             object datum = null;
@@ -1537,21 +1537,21 @@ namespace Pangolin
                         {
                             datum = await sqlCommand.ExecuteScalarAsync(cancellationToken);
                         }
-                        catch (SqlException exc) { await ExceptionLayer.HandleAsync(exc, query, null); throw; }
-                        catch (InvalidCastException exc) { await ExceptionLayer.HandleAsync(exc, query, null); throw; }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (IOException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (SqlException exc) { await ExceptionLayer.CoreHandleAsync(exc, query); throw; }
+                        catch (InvalidCastException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (IOException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
                         try
                         {
                             sqlTransaction.Commit();
                         }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (Exception exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (Exception exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
                     }
                 }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
             }
 
             return datum;
@@ -1559,7 +1559,7 @@ namespace Pangolin
         
         public static async Task<object> SQLReadDatumAsync(string connectionString, string query, SqlParameter[] sqlParameters, CancellationToken cancellationToken)
         {
-            if (!await IsOleDbConnectionStringAsync(connectionString)) { throw new ArgumentException($"{nameof(connectionString)} is not a valid SQL connection string.", nameof(connectionString)); }
+            if (!await IsSqlConnectionStringAsync(connectionString)) { throw new ArgumentException($"{nameof(connectionString)} is not a valid SQL connection string.", nameof(connectionString)); }
             if (query == null) { throw new ArgumentNullException(nameof(query)); }
             if (sqlParameters == null) { throw new ArgumentNullException(nameof(sqlParameters)); }
             else if (sqlParameters.Length < 1) { throw new ArgumentException($"{nameof(sqlParameters)} contains no parameters.", nameof(sqlParameters)); }
@@ -1583,21 +1583,21 @@ namespace Pangolin
                         {
                             datum = await sqlCommand.ExecuteScalarAsync(cancellationToken);
                         }
-                        catch (SqlException exc) { await ExceptionLayer.HandleAsync(exc, query, null); throw; }
-                        catch (InvalidCastException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (IOException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (SqlException exc) { await ExceptionLayer.CoreHandleAsync(exc, query, sqlParameters); throw; }
+                        catch (InvalidCastException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (IOException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
                         try
                         {
                             sqlTransaction.Commit();
                         }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (Exception exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (Exception exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
                     }
                 }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
             }
 
             return datum;
@@ -1607,7 +1607,7 @@ namespace Pangolin
         #region SQL - Write
         public static async Task<int> SQLWriteDataAsync(string connectionString, string query, CancellationToken cancellationToken)
         {
-            if (!await IsOleDbConnectionStringAsync(connectionString)) { throw new ArgumentException($"{nameof(connectionString)} is not a valid SQL connection string.", nameof(connectionString)); }
+            if (!await IsSqlConnectionStringAsync(connectionString)) { throw new ArgumentException($"{nameof(connectionString)} is not a valid SQL connection string.", nameof(connectionString)); }
             if (query == null) { throw new ArgumentNullException(nameof(query)); }
 
             int rowsAffected = 0;
@@ -1627,21 +1627,21 @@ namespace Pangolin
                         {
                             rowsAffected += await sqlCommand.ExecuteNonQueryAsync(cancellationToken);
                         }
-                        catch (SqlException exc) { await ExceptionLayer.HandleAsync(exc, query, null); throw; }
-                        catch (InvalidCastException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (IOException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (SqlException exc) { await ExceptionLayer.CoreHandleAsync(exc, query); throw; }
+                        catch (InvalidCastException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (IOException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
                         try
                         {
                             sqlTransaction.Commit();
                         }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (Exception exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (Exception exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
                     }
                 }
-                catch (SqlException exc) { await ExceptionLayer.HandleAsync(exc, query, null); throw; }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (SqlException exc) { await ExceptionLayer.CoreHandleAsync(exc, query); throw; }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
             }
 
             return rowsAffected;
@@ -1649,7 +1649,7 @@ namespace Pangolin
 
         public static async Task<int> SQLWriteDataAsync(string connectionString, string[] queries, CancellationToken cancellationToken)
         {
-            if (!await IsOleDbConnectionStringAsync(connectionString)) { throw new ArgumentException($"{nameof(connectionString)} is not a valid SQL connection string.", nameof(connectionString)); }
+            if (!await IsSqlConnectionStringAsync(connectionString)) { throw new ArgumentException($"{nameof(connectionString)} is not a valid SQL connection string.", nameof(connectionString)); }
             if (queries == null) { throw new ArgumentNullException(nameof(queries)); }
             else if (queries.Length < 1) { throw new ArgumentException($"{nameof(queries)} contains no queries.", nameof(queries)); }
 
@@ -1673,10 +1673,10 @@ namespace Pangolin
                                 {
                                     rowsAffected += await sqlCommand.ExecuteNonQueryAsync(cancellationToken);
                                 }
-                                catch (SqlException exc) { await ExceptionLayer.HandleAsync(exc, query, null); throw; }
-                                catch (InvalidCastException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                                catch (IOException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                                catch (SqlException exc) { await ExceptionLayer.CoreHandleAsync(exc, query); throw; }
+                                catch (InvalidCastException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                                catch (IOException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
                             }
                         }
 
@@ -1684,11 +1684,11 @@ namespace Pangolin
                         {
                             sqlTransaction.Commit();
                         }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (Exception exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (Exception exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
                     }
                 }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
             }
 
             return rowsAffected;
@@ -1696,7 +1696,7 @@ namespace Pangolin
 
         public static async Task<int> SQLWriteDataAsync(string connectionString, string query, SqlParameter[] sqlParameters, CancellationToken cancellationToken)
         {
-            if (!await IsOleDbConnectionStringAsync(connectionString)) { throw new ArgumentException($"{nameof(connectionString)} is not a valid SQL connection string.", nameof(connectionString)); }
+            if (!await IsSqlConnectionStringAsync(connectionString)) { throw new ArgumentException($"{nameof(connectionString)} is not a valid SQL connection string.", nameof(connectionString)); }
             if (query == null) { throw new ArgumentNullException(nameof(query)); }
             if (sqlParameters == null) { throw new ArgumentNullException(nameof(sqlParameters)); }
             else if (sqlParameters.Length < 1) { throw new ArgumentException($"{nameof(sqlParameters)} contains no parameters.", nameof(sqlParameters)); }
@@ -1720,21 +1720,21 @@ namespace Pangolin
                         {
                             rowsAffected += await sqlCommand.ExecuteNonQueryAsync(cancellationToken);
                         }
-                        catch (SqlException exc) { await ExceptionLayer.HandleAsync(exc, query, null); throw; }
-                        catch (InvalidCastException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (IOException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (SqlException exc) { await ExceptionLayer.CoreHandleAsync(exc, query, sqlParameters); throw; }
+                        catch (InvalidCastException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (IOException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
                         try
                         {
                             sqlTransaction.Commit();
                         }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (Exception exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (Exception exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
                     }
                 }
-                catch (SqlException exc) { await ExceptionLayer.HandleAsync(exc, query, null); throw; }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (SqlException exc) { await ExceptionLayer.CoreHandleAsync(exc, query, sqlParameters); throw; }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
             }
 
             return rowsAffected;
@@ -1742,7 +1742,7 @@ namespace Pangolin
         
         public static async Task<int> SQLWriteDataAsync(string connectionString, string query, SqlParameter[][] sqlParametersCollection, CancellationToken cancellationToken)
         {
-            if (!await IsOleDbConnectionStringAsync(connectionString)) { throw new ArgumentException($"{nameof(connectionString)} is not a valid SQL connection string.", nameof(connectionString)); }
+            if (!await IsSqlConnectionStringAsync(connectionString)) { throw new ArgumentException($"{nameof(connectionString)} is not a valid SQL connection string.", nameof(connectionString)); }
             if (query == null) { throw new ArgumentNullException(nameof(query)); }
             if (sqlParametersCollection == null) { throw new ArgumentNullException(nameof(sqlParametersCollection)); }
             else if (sqlParametersCollection.Length < 1) { throw new ArgumentException($"{nameof(sqlParametersCollection)} contains no parameters.", nameof(sqlParametersCollection)); }
@@ -1771,11 +1771,11 @@ namespace Pangolin
                                     {
                                         rowsAffected += await sqlCommand.ExecuteNonQueryAsync(cancellationToken);
                                     }
-                                    catch (SqlException exc) { await ExceptionLayer.HandleAsync(exc, query, sqlParameters); throw; }
-                                    catch (FormatException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                                    catch (InvalidCastException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                                    catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                                    catch (IOException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                                    catch (SqlException exc) { await ExceptionLayer.CoreHandleAsync(exc, query, sqlParameters); throw; }
+                                    catch (FormatException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                                    catch (InvalidCastException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                                    catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                                    catch (IOException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
                                 }
                             }
                         }
@@ -1784,12 +1784,12 @@ namespace Pangolin
                         {
                             sqlTransaction.Commit();
                         }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (Exception exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (Exception exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
                     }
                 }
-                catch (SqlException exc) { await ExceptionLayer.HandleAsync(exc, query, null); throw; }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (SqlException exc) { await ExceptionLayer.CoreHandleAsync(exc, query); throw; }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
             }
 
             return rowsAffected;
@@ -1797,7 +1797,7 @@ namespace Pangolin
 
         public static async Task<object> SQLWriteDataReadDatumAsync(string connectionString, string query, CancellationToken cancellationToken)
         {
-            if (!await IsOleDbConnectionStringAsync(connectionString)) { throw new ArgumentException($"{nameof(connectionString)} is not a valid SQL connection string.", nameof(connectionString)); }
+            if (!await IsSqlConnectionStringAsync(connectionString)) { throw new ArgumentException($"{nameof(connectionString)} is not a valid SQL connection string.", nameof(connectionString)); }
             if (query == null) { throw new ArgumentNullException(nameof(query)); }
 
             object datum = null;
@@ -1817,20 +1817,20 @@ namespace Pangolin
                         {
                             datum = await sqlCommand.ExecuteScalarAsync(cancellationToken);
                         }
-                        catch (SqlException exc) { await ExceptionLayer.HandleAsync(exc, query, null); throw; }
-                        catch (InvalidCastException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (IOException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (SqlException exc) { await ExceptionLayer.CoreHandleAsync(exc, query); throw; }
+                        catch (InvalidCastException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (IOException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
                         try
                         {
                             sqlTransaction.Commit();
                         }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (Exception exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (Exception exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
                     }
                 }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
             }
 
             return datum;
@@ -1838,7 +1838,7 @@ namespace Pangolin
 
         public static async Task<object> SQLWriteDataReadDatumAsync(string connectionString, string query, SqlParameter[] sqlParameters, CancellationToken cancellationToken)
         {
-            if (!await IsOleDbConnectionStringAsync(connectionString)) { throw new ArgumentException($"{nameof(connectionString)} is not a valid SQL connection string.", nameof(connectionString)); }
+            if (!await IsSqlConnectionStringAsync(connectionString)) { throw new ArgumentException($"{nameof(connectionString)} is not a valid SQL connection string.", nameof(connectionString)); }
             if (query == null) { throw new ArgumentNullException(nameof(query)); }
             if (sqlParameters == null) { throw new ArgumentNullException(nameof(sqlParameters)); }
             else if (sqlParameters.Length < 1) { throw new ArgumentException($"{nameof(sqlParameters)} contains no parameters.", nameof(sqlParameters)); }
@@ -1862,20 +1862,20 @@ namespace Pangolin
                         {
                             datum = await sqlCommand.ExecuteScalarAsync(cancellationToken);
                         }
-                        catch (SqlException exc) { await ExceptionLayer.HandleAsync(exc, query, sqlParameters); throw; }
-                        catch (InvalidCastException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (IOException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (SqlException exc) { await ExceptionLayer.CoreHandleAsync(exc, query, sqlParameters); throw; }
+                        catch (InvalidCastException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (IOException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
                         try
                         {
                             sqlTransaction.Commit();
                         }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (Exception exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (Exception exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
                     }
                 }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
             }
 
             return datum;
@@ -1883,7 +1883,7 @@ namespace Pangolin
 
         public static async Task<SqlParameter[]> SQLWriteDataReadDataAsync(string connectionString, string query, SqlParameter[] sqlParameters, CancellationToken cancellationToken)
         {
-            if (!await IsOleDbConnectionStringAsync(connectionString)) { throw new ArgumentException($"{nameof(connectionString)} is not a valid SQL connection string.", nameof(connectionString)); }
+            if (!await IsSqlConnectionStringAsync(connectionString)) { throw new ArgumentException($"{nameof(connectionString)} is not a valid SQL connection string.", nameof(connectionString)); }
             if (query == null) { throw new ArgumentNullException(nameof(query)); }
             if (sqlParameters == null) { throw new ArgumentNullException(nameof(sqlParameters)); }
             else if (sqlParameters.Length < 1) { throw new ArgumentException($"{nameof(sqlParameters)} contains no parameters.", nameof(sqlParameters)); }
@@ -1907,23 +1907,23 @@ namespace Pangolin
                         {
                             await sqlCommand.ExecuteNonQueryAsync(cancellationToken);
                         }
-                        catch (SqlException exc) { await ExceptionLayer.HandleAsync(exc, query, sqlParameters); throw; }
-                        catch (InvalidCastException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (IOException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (SqlException exc) { await ExceptionLayer.CoreHandleAsync(exc, query, sqlParameters); throw; }
+                        catch (InvalidCastException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (IOException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
                         try
                         {
                             sqlTransaction.Commit();
                         }
-                        catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                        catch (Exception exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                        catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                        catch (Exception exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
 
-                        data = sqlParameters.Where(x => x.Direction == ParameterDirection.ReturnValue || x.Direction == ParameterDirection.Output || x.Direction == ParameterDirection.InputOutput).ToArray();
+                        data = sqlParameters.Where(sqlParameter => sqlParameter.Direction == ParameterDirection.ReturnValue || sqlParameter.Direction == ParameterDirection.Output || sqlParameter.Direction == ParameterDirection.InputOutput).ToArray();
                     }
                 }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
             }
 
             return data;

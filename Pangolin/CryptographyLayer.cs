@@ -163,7 +163,7 @@ namespace Pangolin
                     md5Bytes = md5CryptoServiceProvider.ComputeHash(asciiBytes);
                 }
             }
-            catch (EncoderFallbackException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+            catch (EncoderFallbackException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
             try
             {
@@ -174,9 +174,9 @@ namespace Pangolin
                 }
                 hash = stringBuilder.ToString();
             }
-            catch (OverflowException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (FormatException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (ArgumentOutOfRangeException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+            catch (OverflowException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (FormatException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (ArgumentOutOfRangeException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
             return hash;
         }
@@ -201,9 +201,9 @@ namespace Pangolin
                     hash = stringBuilder.ToString();
                 }
             }
-            catch (EncoderFallbackException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (FormatException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (ArgumentOutOfRangeException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+            catch (EncoderFallbackException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (FormatException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (ArgumentOutOfRangeException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
             return hash;
         }
@@ -228,9 +228,9 @@ namespace Pangolin
                     hash = stringBuilder.ToString();
                 }
             }
-            catch (EncoderFallbackException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (FormatException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (ArgumentOutOfRangeException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+            catch (EncoderFallbackException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (FormatException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (ArgumentOutOfRangeException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
             return hash;
         }
@@ -260,11 +260,11 @@ namespace Pangolin
                     hash = Convert.ToBase64String(memoryStream.ToArray());
                 }
             }
-            catch (ArgumentNullException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (ArgumentOutOfRangeException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (NotSupportedException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+            catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (ArgumentOutOfRangeException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (NotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
             return hash;
         }
@@ -301,11 +301,11 @@ namespace Pangolin
                     hash = Convert.ToBase64String(memoryStream.ToArray());
                 }
             }
-            catch (ArgumentNullException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (ArgumentOutOfRangeException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (NotSupportedException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+            catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (ArgumentOutOfRangeException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (NotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
             return hash;
         }
@@ -326,8 +326,8 @@ namespace Pangolin
                     bytes = rfc2898.GetBytes(outputBytes);
                 }
             }
-            catch (ArgumentOutOfRangeException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+            catch (ArgumentOutOfRangeException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
             return bytes;
         }
@@ -353,13 +353,13 @@ namespace Pangolin
 
                 isValid = SlowEquals(hashBytes, storedHashBytes);
             }
-            catch (FormatException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (ArgumentNullException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (ArgumentOutOfRangeException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (RankException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (ArrayTypeMismatchException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (InvalidCastException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+            catch (FormatException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (ArgumentOutOfRangeException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (RankException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (ArrayTypeMismatchException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (InvalidCastException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
             return isValid;
         }
@@ -391,13 +391,13 @@ namespace Pangolin
 
                 isValid = await ValidatePasswordHashAsync(password, storedHashSalt);
             }
-            catch (FormatException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (ArgumentNullException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (ArgumentOutOfRangeException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (RankException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (ArrayTypeMismatchException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (InvalidCastException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+            catch (FormatException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (ArgumentOutOfRangeException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (RankException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (ArrayTypeMismatchException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (InvalidCastException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
             return isValid;
         }
@@ -471,11 +471,11 @@ namespace Pangolin
                 }
 
             }
-            catch (PlatformNotSupportedException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (ArgumentOutOfRangeException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (ArgumentNullException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+            catch (PlatformNotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (ArgumentOutOfRangeException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
             return plainText;
         }
@@ -504,10 +504,10 @@ namespace Pangolin
                 }
                 
             }
-            catch (PlatformNotSupportedException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (ArgumentNullException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+            catch (PlatformNotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
             return encryptedBytes;
         }

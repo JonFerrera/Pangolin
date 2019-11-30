@@ -103,32 +103,5 @@ namespace Pangolin.Properties {
                 return ((int)(this["EventLogMaxAge"]));
             }
         }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool IsLiveEventLog {
-            get {
-                return ((bool)(this["IsLiveEventLog"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool IsLiveFTP {
-            get {
-                return ((bool)(this["IsLiveFTP"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool IsLiveMail {
-            get {
-                return ((bool)(this["IsLiveMail"]));
-            }
-        }
     }
 }

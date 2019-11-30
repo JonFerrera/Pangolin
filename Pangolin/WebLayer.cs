@@ -55,7 +55,7 @@ namespace Pangolin
 
         public static async Task<bool> CreateDirectoryAsync(string externalFolderLocation, NetworkCredential networkCredential = null)
         {
-            if (ConfigurationLayer.IsLiveFTP && Uri.TryCreate(externalFolderLocation, UriKind.Absolute, out Uri ftpUri) && ftpUri.Scheme == Uri.UriSchemeFtp)
+            if (Uri.TryCreate(externalFolderLocation, UriKind.Absolute, out Uri ftpUri) && ftpUri.Scheme == Uri.UriSchemeFtp)
             {
                 try
                 {
@@ -77,11 +77,11 @@ namespace Pangolin
                         return true;
                     }
                 }
-                catch (ArgumentNullException exc) { await ExceptionLayer.HandleAsync(exc); }
-                catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); }
-                catch (NotSupportedException exc) { await ExceptionLayer.HandleAsync(exc); }
-                catch (SecurityException exc) { await ExceptionLayer.HandleAsync(exc); }
+                catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+                catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+                catch (NotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+                catch (SecurityException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
             }
 
             return false;
@@ -89,7 +89,7 @@ namespace Pangolin
 
         public static async Task<bool> DeleteAsync(string externalFileLocation, string userName = null, string password = null)
         {
-            if (ConfigurationLayer.IsLiveFTP && Uri.TryCreate(externalFileLocation, UriKind.Absolute, out Uri ftpUri) && ftpUri.Scheme == Uri.UriSchemeFtp)
+            if (Uri.TryCreate(externalFileLocation, UriKind.Absolute, out Uri ftpUri) && ftpUri.Scheme == Uri.UriSchemeFtp)
             {
                 try
                 {
@@ -111,11 +111,11 @@ namespace Pangolin
                         return true;
                     }
                 }
-                catch (ArgumentNullException exc) { await ExceptionLayer.HandleAsync(exc); }
-                catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); }
-                catch (NotSupportedException exc) { await ExceptionLayer.HandleAsync(exc); }
-                catch (SecurityException exc) { await ExceptionLayer.HandleAsync(exc); }
+                catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+                catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+                catch (NotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+                catch (SecurityException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
             }
 
             return false;
@@ -123,7 +123,7 @@ namespace Pangolin
 
         public static async Task<bool> DownloadAsync(string externalFileLocation, string localFileLocation, string userName = null, string password = null)
         {
-            if (ConfigurationLayer.IsLiveFTP && Uri.TryCreate(externalFileLocation, UriKind.Absolute, out Uri ftpUri) && ftpUri.Scheme == Uri.UriSchemeFtp)
+            if (Uri.TryCreate(externalFileLocation, UriKind.Absolute, out Uri ftpUri) && ftpUri.Scheme == Uri.UriSchemeFtp)
             {
                 try
                 {
@@ -148,11 +148,11 @@ namespace Pangolin
                         return await FileLayer.CreateFileAsync(localFileLocation, content);
                     }
                 }
-                catch (ArgumentNullException exc) { await ExceptionLayer.HandleAsync(exc); }
-                catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); }
-                catch (NotSupportedException exc) { await ExceptionLayer.HandleAsync(exc); }
-                catch (SecurityException exc) { await ExceptionLayer.HandleAsync(exc); }
+                catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+                catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+                catch (NotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+                catch (SecurityException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
             }
 
             return false;
@@ -160,7 +160,7 @@ namespace Pangolin
 
         public static async Task<string[]> ListDirectoriesAsync(string externalFolderLocation, string userName = null, string password = null)
         {
-            if (ConfigurationLayer.IsLiveFTP && Uri.TryCreate(externalFolderLocation, UriKind.Absolute, out Uri ftpUri) && ftpUri.Scheme == Uri.UriSchemeFtp)
+            if (Uri.TryCreate(externalFolderLocation, UriKind.Absolute, out Uri ftpUri) && ftpUri.Scheme == Uri.UriSchemeFtp)
             {
                 try
                 {
@@ -192,12 +192,12 @@ namespace Pangolin
 
                     return fileList.ToArray();
                 }
-                catch (ArgumentNullException exc) { await ExceptionLayer.HandleAsync(exc); }
-                catch (ArgumentOutOfRangeException exc) { await ExceptionLayer.HandleAsync(exc); }
-                catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); }
-                catch (NotSupportedException exc) { await ExceptionLayer.HandleAsync(exc); }
-                catch (SecurityException exc) { await ExceptionLayer.HandleAsync(exc); }
+                catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+                catch (ArgumentOutOfRangeException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+                catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+                catch (NotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+                catch (SecurityException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
             }
 
             return new string[] { };
@@ -205,7 +205,7 @@ namespace Pangolin
 
         public static async Task<bool> RenameAsync(string externalFileLocation, string newFileName, string userName = null, string password = null)
         {
-            if (ConfigurationLayer.IsLiveFTP && Uri.TryCreate(externalFileLocation, UriKind.Absolute, out Uri ftpUri) && ftpUri.Scheme == Uri.UriSchemeFtp)
+            if (Uri.TryCreate(externalFileLocation, UriKind.Absolute, out Uri ftpUri) && ftpUri.Scheme == Uri.UriSchemeFtp)
             {
                 try
                 {
@@ -229,11 +229,11 @@ namespace Pangolin
                         return true;
                     }
                 }
-                catch (ArgumentNullException exc) { await ExceptionLayer.HandleAsync(exc); }
-                catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); }
-                catch (NotSupportedException exc) { await ExceptionLayer.HandleAsync(exc); }
-                catch (SecurityException exc) { await ExceptionLayer.HandleAsync(exc); }
+                catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+                catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+                catch (NotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+                catch (SecurityException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
             }
 
             return false;
@@ -241,12 +241,11 @@ namespace Pangolin
         
         public static async Task<bool> UploadAsync(string localFileLocation, string externalFileLocation, string userName = null, string password = null)
         {
-            if (ConfigurationLayer.IsLiveFTP && Uri.TryCreate(externalFileLocation, UriKind.Absolute, out Uri ftpUri) && ftpUri.Scheme == Uri.UriSchemeFtp)
+            if (Uri.TryCreate(externalFileLocation, UriKind.Absolute, out Uri ftpUri) && ftpUri.Scheme == Uri.UriSchemeFtp)
             {
-                FtpWebRequest ftpWebRequest;
                 try
                 {
-                    ftpWebRequest = WebRequest.Create(ftpUri) as FtpWebRequest;
+                    FtpWebRequest ftpWebRequest = WebRequest.Create(ftpUri) as FtpWebRequest;
 
                     ftpWebRequest.Method = WebRequestMethods.Ftp.UploadFile;
 
@@ -279,12 +278,12 @@ namespace Pangolin
                         }
                     }
                 }
-                catch (ArgumentNullException exc) { await ExceptionLayer.HandleAsync(exc); }
-                catch (EncoderFallbackException exc) { await ExceptionLayer.HandleAsync(exc); }
-                catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); }
-                catch (NotSupportedException exc) { await ExceptionLayer.HandleAsync(exc); }
-                catch (SecurityException exc) { await ExceptionLayer.HandleAsync(exc); }
+                catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+                catch (EncoderFallbackException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+                catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+                catch (NotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+                catch (SecurityException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
             }
 
             return false;
@@ -322,12 +321,12 @@ namespace Pangolin
                     }
                 }
             }
-            catch (NotSupportedException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (SecurityException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ProtocolViolationException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentNullException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); }
+            catch (NotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (SecurityException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ProtocolViolationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
 
             return false;
         }
@@ -350,12 +349,12 @@ namespace Pangolin
                     }
                 }
             }
-            catch (NotSupportedException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (SecurityException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ProtocolViolationException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentNullException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); }
+            catch (NotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (SecurityException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ProtocolViolationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
 
             return false;
         }
@@ -378,14 +377,14 @@ namespace Pangolin
                     }
                 }
             }
-            catch (ProtocolViolationException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (WebException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (NotSupportedException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (SecurityException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (NotImplementedException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentNullException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); }
+            catch (ProtocolViolationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (WebException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (NotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (SecurityException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (NotImplementedException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
 
             return HttpStatusCode.BadRequest.ToString();
         }
@@ -410,14 +409,14 @@ namespace Pangolin
                     }
                 }
             }
-            catch (ProtocolViolationException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (WebException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (NotSupportedException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (SecurityException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (NotImplementedException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentNullException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); }
+            catch (ProtocolViolationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (WebException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (NotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (SecurityException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (NotImplementedException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
 
             return HttpStatusCode.BadRequest.ToString();
         }
@@ -439,12 +438,12 @@ namespace Pangolin
                 }
                 
             }
-            catch (ProtocolViolationException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (NotSupportedException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (SecurityException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (NotImplementedException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentNullException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); }
+            catch (ProtocolViolationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (NotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (SecurityException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (NotImplementedException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
 
             return false;
         }
@@ -468,12 +467,12 @@ namespace Pangolin
                 }
 
             }
-            catch (ProtocolViolationException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (NotSupportedException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (SecurityException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (NotImplementedException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentNullException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); }
+            catch (ProtocolViolationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (NotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (SecurityException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (NotImplementedException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
 
             return false;
         }
@@ -498,13 +497,13 @@ namespace Pangolin
                     }
                 }
             }
-            catch (ProtocolViolationException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (NotSupportedException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (SecurityException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (NotImplementedException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentNullException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); }
+            catch (ProtocolViolationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (NotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (SecurityException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (NotImplementedException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
 
             return new string[] { };
         }
@@ -531,13 +530,13 @@ namespace Pangolin
                     }
                 }
             }
-            catch (ProtocolViolationException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (NotSupportedException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (SecurityException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (NotImplementedException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentNullException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); }
+            catch (ProtocolViolationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (NotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (SecurityException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (NotImplementedException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
 
             return new string[] { };
         }
@@ -567,13 +566,13 @@ namespace Pangolin
                     }
                 }
             }
-            catch (ProtocolViolationException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (NotSupportedException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (SecurityException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (NotImplementedException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentNullException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); }
+            catch (ProtocolViolationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (NotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (SecurityException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (NotImplementedException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
 
             return new string[] { };
         }
@@ -605,13 +604,13 @@ namespace Pangolin
                     }
                 }
             }
-            catch (ProtocolViolationException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (NotSupportedException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (SecurityException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (NotImplementedException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentNullException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); }
+            catch (ProtocolViolationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (NotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (SecurityException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (NotImplementedException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
 
             return new string[] { };
         }
@@ -640,14 +639,14 @@ namespace Pangolin
                     }
                 }
             }
-            catch (EncoderFallbackException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (NotSupportedException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (SecurityException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (IOException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentOutOfRangeException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentNullException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); }
+            catch (EncoderFallbackException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (NotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (SecurityException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (IOException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentOutOfRangeException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
 
             return false;
         }
@@ -678,14 +677,14 @@ namespace Pangolin
                     }
                 }
             }
-            catch (EncoderFallbackException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (NotSupportedException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (SecurityException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (IOException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentOutOfRangeException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentNullException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); }
+            catch (EncoderFallbackException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (NotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (SecurityException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (IOException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentOutOfRangeException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
 
             return false;
         }
@@ -717,14 +716,14 @@ namespace Pangolin
                     }
                 }
             }
-            catch (EncoderFallbackException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (NotSupportedException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (SecurityException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (IOException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentOutOfRangeException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentNullException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); }
+            catch (EncoderFallbackException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (NotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (SecurityException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (IOException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentOutOfRangeException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
 
             return address;
         }
@@ -758,14 +757,14 @@ namespace Pangolin
                     }
                 }
             }
-            catch (EncoderFallbackException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (NotSupportedException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (SecurityException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (IOException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentOutOfRangeException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentNullException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); }
+            catch (EncoderFallbackException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (NotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (SecurityException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (IOException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentOutOfRangeException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
 
             return address;
         }
@@ -794,14 +793,14 @@ namespace Pangolin
                     }
                 }
             }
-            catch (EncoderFallbackException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (NotSupportedException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (SecurityException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (IOException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentOutOfRangeException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentNullException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); }
+            catch (EncoderFallbackException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (NotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (SecurityException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (IOException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentOutOfRangeException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
 
             return false;
         }
@@ -832,14 +831,14 @@ namespace Pangolin
                     }
                 }
             }
-            catch (EncoderFallbackException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (NotSupportedException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (SecurityException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (IOException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentOutOfRangeException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentNullException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); }
+            catch (EncoderFallbackException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (NotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (SecurityException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (IOException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentOutOfRangeException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
 
             return false;
         }
@@ -862,14 +861,14 @@ namespace Pangolin
                     }
                 }
             }
-            catch (ProtocolViolationException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (WebException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (NotSupportedException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (SecurityException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (NotImplementedException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentNullException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); }
+            catch (ProtocolViolationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (WebException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (NotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (SecurityException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (NotImplementedException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
 
             return HttpStatusCode.BadRequest.ToString();
         }
@@ -894,14 +893,14 @@ namespace Pangolin
                     }
                 }
             }
-            catch (ProtocolViolationException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (WebException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (NotSupportedException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (SecurityException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (NotImplementedException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentNullException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); }
+            catch (ProtocolViolationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (WebException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (NotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (SecurityException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (NotImplementedException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
 
             return HttpStatusCode.BadRequest.ToString();
         }
@@ -918,8 +917,8 @@ namespace Pangolin
                     return await webClient.DownloadStringTaskAsync(address);
                 }
             }
-            catch (ArgumentNullException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (WebException exc) { await ExceptionLayer.HandleAsync(exc); }
+            catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (WebException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
 
             return string.Empty;
         }
@@ -935,8 +934,8 @@ namespace Pangolin
                     return await webClient.DownloadStringTaskAsync(address);
                 }
             }
-            catch (ArgumentNullException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (WebException exc) { await ExceptionLayer.HandleAsync(exc); }
+            catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (WebException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
 
             return string.Empty;
         }
@@ -952,10 +951,10 @@ namespace Pangolin
                     return await webClient.DownloadStringTaskAsync(relativeAddress);
                 }
             }
-            catch (ArgumentNullException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (WebException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); }
+            catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (WebException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
 
             return string.Empty;
         }
@@ -972,10 +971,10 @@ namespace Pangolin
                     return await webClient.DownloadStringTaskAsync(relativeAddress);
                 }
             }
-            catch (ArgumentNullException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (WebException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); }
+            catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (WebException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
 
             return string.Empty;
         }
@@ -990,8 +989,8 @@ namespace Pangolin
                     return await webClient.UploadStringTaskAsync(address, data);
                 }
             }
-            catch (ArgumentNullException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (WebException exc) { await ExceptionLayer.HandleAsync(exc); }
+            catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (WebException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
 
             return string.Empty;
         }
@@ -1007,8 +1006,8 @@ namespace Pangolin
                     return await webClient.UploadStringTaskAsync(address, data);
                 }
             }
-            catch (ArgumentNullException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (WebException exc) { await ExceptionLayer.HandleAsync(exc); }
+            catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (WebException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
 
             return string.Empty;
         }
@@ -1024,10 +1023,10 @@ namespace Pangolin
                     return await webClient.UploadStringTaskAsync(relativeAddress, data);
                 }
             }
-            catch (ArgumentNullException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (WebException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); }
+            catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (WebException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
 
             return string.Empty;
         }
@@ -1044,10 +1043,10 @@ namespace Pangolin
                     return await webClient.UploadStringTaskAsync(relativeAddress, data);
                 }
             }
-            catch (ArgumentNullException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (WebException exc) { await ExceptionLayer.HandleAsync(exc); }
-            catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); }
+            catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (WebException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
 
             return string.Empty;
         }

@@ -62,8 +62,8 @@ namespace Pangolin
                     return memoryStream.ToArray();
                 }
             }
-            catch (NotSupportedException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+            catch (NotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
         }
 
         public static async Task<byte[]> GZipCompressAsync(string content, CancellationToken cancellationToken)
@@ -76,7 +76,7 @@ namespace Pangolin
                 byte[] contentBytes = ConfigurationLayer.DefaultEncoding.GetBytes(content);
                 return await GZipCompressAsync(contentBytes, cancellationToken);
             }
-            catch (EncoderFallbackException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+            catch (EncoderFallbackException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
         }
 
         public static async Task<string> GZipCompressToBase64StringAsync(byte[] contentBytes, CancellationToken cancellationToken)
@@ -124,9 +124,9 @@ namespace Pangolin
                     }
                 }
             }
-            catch (InvalidDataException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (IOException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (NotSupportedException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+            catch (InvalidDataException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (IOException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (NotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
         }
 
         public static async Task<byte[]> GZipDecompressAsync(string content, CancellationToken cancellationToken)
@@ -139,7 +139,7 @@ namespace Pangolin
                 byte[] contentBytes = Convert.FromBase64String(content);
                 return await GZipDecompressAsync(contentBytes, cancellationToken);
             }
-            catch (FormatException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+            catch (FormatException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
         }
 
         public static async Task<string> GZipDecompressToBase64StringAsync(byte[] contentBytes, CancellationToken cancellationToken)

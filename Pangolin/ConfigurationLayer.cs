@@ -90,14 +90,22 @@ namespace Pangolin
         #endregion
 
         #region Expression-bodied Members
-        
+
         #endregion
 
+        /// <summary>
+        /// Gets the connection string for the key name provided.
+        /// </summary>
+        /// <param name="name">The key for the connection string value in the config file.</param>
+        /// <returns>Returns the connection string.</returns>
+        /// <exception cref="ArgumentNullException">The name is null.</exception>
+        /// <exception cref="ArgumentException">The name is empty or consists of only white-space characters.</exception>
+        /// <exception cref="ConfigurationErrorsException">Could not retrieve a ConnectionStringSettingsCollection object.</exception>
         public static string GetConnectionString(string name)
         {
             if (name == null) { throw new ArgumentNullException(nameof(name)); }
-            if (string.Equals(name, string.Empty)) { throw new ArgumentException($"{nameof(name)} cannot be an empty string.", nameof(name)); }
-            if (string.Equals(name.Trim(), string.Empty)) { throw new ArgumentException($"{nameof(name)} cannot be a white-space string.", nameof(name)); }
+            else if (string.Equals(name, string.Empty)) { throw new ArgumentException($"{nameof(name)} cannot be an empty string.", nameof(name)); }
+            else if (string.Equals(name.Trim(), string.Empty)) { throw new ArgumentException($"{nameof(name)} cannot be a white-space string.", nameof(name)); }
 
             string _value = null;
             try
@@ -113,11 +121,19 @@ namespace Pangolin
             return _value ?? string.Empty;
         }
 
+        /// <summary>
+        /// Gets the environment variable for the key provided.
+        /// </summary>
+        /// <param name="key">The key for the environment variable.</param>
+        /// <returns>Returns the environment variable.</returns>
+        /// <exception cref="ArgumentNullException">The key is null.</exception>
+        /// <exception cref="ArgumentException">The key is empty or consists of only white-space characters.</exception>
+        /// <exception cref="SecurityException">The caller does not have permission to get the environment variable.</exception>
         public static string GetEnvironmentVariable(string key)
         {
             if (key == null) { throw new ArgumentNullException(nameof(key)); }
-            if (string.Equals(key, string.Empty)) { throw new ArgumentException($"{nameof(key)} cannot be an empty string.", nameof(key)); }
-            if (string.Equals(key.Trim(), string.Empty)) { throw new ArgumentException($"{nameof(key)} cannot be a white-space string.", nameof(key)); }
+            else if (string.Equals(key, string.Empty)) { throw new ArgumentException($"{nameof(key)} cannot be an empty string.", nameof(key)); }
+            else if (string.Equals(key.Trim(), string.Empty)) { throw new ArgumentException($"{nameof(key)} cannot be a white-space string.", nameof(key)); }
 
             string _value = null;
             try
@@ -133,12 +149,21 @@ namespace Pangolin
             return _value ?? string.Empty;
         }
 
+        /// <summary>
+        /// Gets the value for the key provided.
+        /// </summary>
+        /// <param name="key">The key for the configuration variable.</param>
+        /// <returns>Returns the value.</returns>
+        /// <exception cref="ArgumentNullException">The key is null.</exception>
+        /// <exception cref="ArgumentException">The key is empty or consists of only white-space characters.</exception>
+        /// <exception cref="ConfigurationErrorsException">Could not retrieve a NameValueCollection object with the application settings data.</exception>
+        /// <exception cref="InvalidOperationException">The configuration has no non-null keys.</exception>
         private static string GetValue(string key)
         {
             if (key == null) { throw new ArgumentNullException(nameof(key)); }
-            if (string.Equals(key, string.Empty)) { throw new ArgumentException($"{nameof(key)} cannot be an empty string.", nameof(key)); }
-            if (string.Equals(key.Trim(), string.Empty)) { throw new ArgumentException($"{nameof(key)} cannot be a white-space string.", nameof(key)); }
-            if (!ConfigurationManager.AppSettings.HasKeys()) { throw new InvalidOperationException("AppSettings has no non-null keys."); }
+            else if (string.Equals(key, string.Empty)) { throw new ArgumentException($"{nameof(key)} cannot be an empty string.", nameof(key)); }
+            else if (string.Equals(key.Trim(), string.Empty)) { throw new ArgumentException($"{nameof(key)} cannot be a white-space string.", nameof(key)); }
+            if (!ConfigurationManager.AppSettings.HasKeys()) { throw new InvalidOperationException($"{ConfigurationManager.AppSettings} has no non-null keys."); }
 
             string _value = null;
             try
@@ -154,14 +179,44 @@ namespace Pangolin
             return _value ?? string.Empty;
         }
 
+        #region Environment Folder
+        public static string GetProgramFilesFolder()
+        {
+            return GetFolder(Environment.SpecialFolder.ProgramFiles);
+        }
+
+        public static string GetProgramFilesX86Folder()
+        {
+            return GetFolder(Environment.SpecialFolder.ProgramFilesX86);
+        }
+
+        public static string GetWindowsFolder()
+        {
+            return GetFolder(Environment.SpecialFolder.Windows);
+        }
+
+        private static string GetFolder(Environment.SpecialFolder specialFolder)
+        {
+            try
+            {
+                return Environment.GetFolderPath(specialFolder);
+            }
+            catch (PlatformNotSupportedException exc)
+            {
+                ExceptionLayer.Handle(exc);
+                throw;
+            }
+        }
+        #endregion
+
         #region App/Web Config
         public static T GetConfigValue<T>(string key)
         {
-            if (string.IsNullOrWhiteSpace(key)) { throw new ArgumentNullException("key"); }
+            if (string.IsNullOrWhiteSpace(key)) { throw new ArgumentNullException(nameof(key)); }
 
             string _value = GetValue(key);
             T _valueT = default;
-
+            
             try
             {
                 switch (_valueT)
@@ -216,15 +271,12 @@ namespace Pangolin
                         break;
                     default:
                         TypeConverter typeConverter = TypeDescriptor.GetConverter(typeof(T));
-                        if (typeConverter != null)
+                        try
                         {
-                            try
-                            {
-                                _valueT = (T)typeConverter.ConvertFromString(_value);
-                            }
-                            catch (NotSupportedException exc) { ExceptionLayer.Handle(exc); throw; }
-                            catch (Exception exc) { ExceptionLayer.Handle(exc); throw; }
+                            _valueT = (T)typeConverter?.ConvertFromString(_value);
                         }
+                        catch (NotSupportedException exc) { ExceptionLayer.Handle(exc); throw; }
+                        catch (Exception exc) { ExceptionLayer.Handle(exc); throw; }
                         break;
                 }
             }
@@ -300,28 +352,6 @@ namespace Pangolin
             get
             {
                 return Settings.Default.EventLogMaxAge;
-            }
-        }
-
-        public static bool IsLiveEventLog
-        {
-            get
-            {
-                return Settings.Default.IsLiveEventLog;
-            }
-        }
-        public static bool IsLiveFTP
-        {
-            get
-            {
-                return Settings.Default.IsLiveFTP;
-            }
-        }
-        public static bool IsLiveMail
-        {
-            get
-            {
-                return Settings.Default.IsLiveMail;
             }
         }
         #endregion

@@ -1,9 +1,9 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,6 +11,8 @@ namespace Pangolin
 {
     public class ApiLayer
     {
+        private static ConcurrentDictionary<Uri, string> cachedGets = new ConcurrentDictionary<Uri, string>();
+
         private const string _jsonMediaType = "application/json";
 
         private static WebProxy _webProxy;
@@ -120,8 +122,8 @@ namespace Pangolin
                     httpStatusCode = httpResponseMessage.StatusCode;
                 }
             }
-            catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (HttpRequestException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+            catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (HttpRequestException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
             return httpStatusCode;
         }
@@ -130,17 +132,25 @@ namespace Pangolin
         {
             string json = ConfigurationLayer.EmptyJson;
 
-            try
+            if (cachedGets.TryGetValue(apiUri, out string cachedJson))
             {
-                using (HttpResponseMessage httpResponseMessage = await _httpClient.GetAsync(apiUri, cancellationToken))
+                json = cachedJson;
+            }
+            else
+            {
+                try
                 {
-                    if (httpResponseMessage.IsSuccessStatusCode)
+                    using (HttpResponseMessage httpResponseMessage = await _httpClient.GetAsync(apiUri, cancellationToken))
                     {
-                        json = await httpResponseMessage.Content.ReadAsStringAsync();
+                        if (httpResponseMessage.IsSuccessStatusCode)
+                        {
+                            json = await httpResponseMessage.Content.ReadAsStringAsync();
+                            cachedGets.TryAdd(apiUri, json);
+                        }
                     }
                 }
+                catch (HttpRequestException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
             }
-            catch (HttpRequestException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
 
             return json;
         }
@@ -158,8 +168,8 @@ namespace Pangolin
                         httpStatusCode = httpResponseMessage.StatusCode;
                     }
                 }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                catch (HttpRequestException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                catch (HttpRequestException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
             }
 
             return httpStatusCode;
@@ -181,9 +191,9 @@ namespace Pangolin
                         }
                     }
                 }
-                catch (ArgumentNullException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                catch (HttpRequestException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                catch (HttpRequestException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
             }
 
             return options;
@@ -197,7 +207,7 @@ namespace Pangolin
                 {
                     httpResponseMessage.EnsureSuccessStatusCode();
                 }
-                catch (HttpRequestException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (HttpRequestException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
                 string returnData = await httpResponseMessage.Content.ReadAsStringAsync();
                 return (httpResponseMessage.StatusCode, httpResponseMessage.Headers.Location, returnData);
             }
@@ -212,7 +222,7 @@ namespace Pangolin
                 {
                     httpResponseMessage.EnsureSuccessStatusCode();
                 }
-                catch (HttpRequestException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (HttpRequestException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
                 string returnData = await httpResponseMessage.Content.ReadAsStringAsync();
                 return (httpResponseMessage.StatusCode, httpResponseMessage.Headers.Location, returnData);
             }
@@ -227,7 +237,7 @@ namespace Pangolin
                 {
                     httpResponseMessage.EnsureSuccessStatusCode();
                 }
-                catch (HttpRequestException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (HttpRequestException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
                 return (httpResponseMessage.StatusCode, httpResponseMessage.Headers.Location);
             }

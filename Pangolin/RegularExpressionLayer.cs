@@ -81,6 +81,8 @@ namespace Pangolin
                     matchList.Add(match.Value);
                     match = match.NextMatch();
                 }
+
+                matchList.TrimExcess();
             }
             catch (RegexMatchTimeoutException exc)
             {

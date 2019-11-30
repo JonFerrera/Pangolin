@@ -10,19 +10,6 @@ namespace Pangolin
 {
     public static class MailLayer
     {
-        private static async Task<MailAddress> FormatEmailAddressStringAsync(string emailAddress, string displayName = null)
-        {
-            if (string.IsNullOrWhiteSpace(displayName))
-            {
-                return new MailAddress(emailAddress);
-            }
-            try
-            {
-                return new MailAddress(emailAddress, displayName, ConfigurationLayer.DefaultEncoding);
-            }
-            catch (FormatException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-        }
-        
         private static async Task<bool> SendMailAsync(string subject, string body, MailAddress from, MailAddress[] to, MailAddress[] cc, MailAddress[] bcc, Uri[] attachmentFiles, bool isBodyHtml = true, SmtpDeliveryMethod smtpDeliveryMethod = SmtpDeliveryMethod.PickupDirectoryFromIis, MailPriority mailPriority = MailPriority.Normal)
         {
             if (subject == null) { throw new ArgumentNullException(nameof(subject)); }
@@ -90,10 +77,10 @@ namespace Pangolin
                     }
                 }
             }
-            catch (ArgumentNullException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (FormatException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (Exception exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+            catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (FormatException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (Exception exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
             return isSuccess;
         }
@@ -106,12 +93,12 @@ namespace Pangolin
             if (to == null) { throw new ArgumentNullException(nameof(to)); }
             else if (to.Length < 1) { throw new ArgumentException($"{nameof(to)} contains no email addresses.", nameof(to)); }
 
-            MailAddress fromAddress = await FormatEmailAddressStringAsync(from);
+            MailAddress fromAddress = new MailAddress(from);
 
             MailAddress[] toAddresses = new MailAddress[to.Length];
             for (int i = default; i < to.Length; i++)
             {
-                toAddresses[i] = await FormatEmailAddressStringAsync(to[i]);
+                toAddresses[i] = new MailAddress(to[i]);
             }
 
             MailAddress[] ccAddresses = null;
@@ -121,7 +108,7 @@ namespace Pangolin
 
                 for (int i = default; i < cc.Length; i++)
                 {
-                    ccAddresses[i] = await FormatEmailAddressStringAsync(cc[i]);
+                    ccAddresses[i] = new MailAddress(cc[i]);
                 }
             }
 
@@ -132,7 +119,7 @@ namespace Pangolin
 
                 for (int i = default; i < bcc.Length; i++)
                 {
-                    bccAddresses[i] = await FormatEmailAddressStringAsync(bcc[i]);
+                    bccAddresses[i] = new MailAddress(bcc[i]);
                 }
             }
 
@@ -142,15 +129,17 @@ namespace Pangolin
                 uris = new Uri[attachmentFiles.Length];
                 for (int i = default; i < attachmentFiles.Length; i++)
                 {
-                    Uri uri = new Uri(attachmentFiles[i], UriKind.Absolute);
-                    uris[i] = uri;
+                    if (Uri.TryCreate(attachmentFiles[i], UriKind.Absolute, out Uri uri) && uri.IsFile)
+                    {
+                        uris[i] = uri;
+                    }
                 }
             }
 
             return await SendMailAsync(subject, body, fromAddress, toAddresses, ccAddresses, bccAddresses, uris, isBodyHtml, smtpDeliveryMethod, mailPriority);
         }
 
-        public static async Task<bool> SendDeveloperMailAsync(string subject, string body, string[] attachmentFiles = null)
+        public static async Task<bool> SendCoreMailAsync(string subject, string body, string[] attachmentFiles = null)
         {
             if (string.IsNullOrWhiteSpace(ConfigurationLayer.DeveloperMailFrom) || (ConfigurationLayer.DeveloperMailTo != null && ConfigurationLayer.DeveloperMailTo.Length > 0))
             {
@@ -160,52 +149,14 @@ namespace Pangolin
             return await SendMailAsync(subject, body, ConfigurationLayer.DeveloperMailFrom, ConfigurationLayer.DeveloperMailTo, ConfigurationLayer.DeveloperMailCC, ConfigurationLayer.DeveloperMailBCC, attachmentFiles, true, SmtpDeliveryMethod.Network, MailPriority.High);
         }
 
-        public static async Task<bool> SendMailIisAsync(string subject, string body, string from, string[] to, string[] cc = null, string[] bcc = null, bool isBodyHtml = true, bool isLiveMail = true)
+        public static async Task<bool> SendMailIisAsync(string subject, string body, string from, string[] to, string[] cc = null, string[] bcc = null, string[] attachmentFiles = null, bool isBodyHtml = true)
         {
-            bool isSent = false;
-
-            if (ConfigurationLayer.IsLiveMail || isLiveMail)
-            {
-                isSent = await SendMailAsync(subject, body, from, to, cc, bcc, null, isBodyHtml, SmtpDeliveryMethod.PickupDirectoryFromIis);
-            }
-
-            return isSent;
+            return await SendMailAsync(subject, body, from, to, cc, bcc, attachmentFiles, isBodyHtml, SmtpDeliveryMethod.PickupDirectoryFromIis); ;
         }
 
-        public static async Task<bool> SendMailIisAsync(string subject, string body, string from, string[] to, string[] cc = null, string[] bcc = null, string[] attachmentFiles = null, bool isBodyHtml = true, bool isLiveMail = true)
+        public static async Task<bool> SendMailSmtpAsync(string subject, string body, string from, string[] to, string[] cc = null, string[] bcc = null, string[] attachmentFiles = null, bool isBodyHtml = true)
         {
-            bool isSent = false;
-
-            if (ConfigurationLayer.IsLiveMail || isLiveMail)
-            {
-                isSent = await SendMailAsync(subject, body, from, to, cc, bcc, attachmentFiles, isBodyHtml, SmtpDeliveryMethod.PickupDirectoryFromIis);
-            }
-
-            return isSent;
-        }
-
-        public static async Task<bool> SendMailSmtpAsync(string subject, string body, string from, string[] to, string[] cc = null, string[] bcc = null, bool isBodyHtml = true, bool isLiveMail = true)
-        {
-            bool isSent = false;
-
-            if (ConfigurationLayer.IsLiveMail || isLiveMail)
-            {
-                isSent = await SendMailAsync(subject, body, from, to, cc, bcc, null, isBodyHtml, SmtpDeliveryMethod.Network);
-            }
-
-            return isSent;
-        }
-
-        public static async Task<bool> SendMailSmtpAsync(string subject, string body, string from, string[] to, string[] cc = null, string[] bcc = null, string[] attachmentFiles = null, bool isBodyHtml = true, bool isLiveMail = true)
-        {
-            bool isSent = false;
-
-            if (ConfigurationLayer.IsLiveMail || isLiveMail)
-            {
-                isSent = await SendMailAsync(subject, body, from, to, cc, bcc, attachmentFiles, isBodyHtml, SmtpDeliveryMethod.Network);
-            }
-
-            return isSent;
+            return await SendMailAsync(subject, body, from, to, cc, bcc, attachmentFiles, isBodyHtml, SmtpDeliveryMethod.Network); ;
         }
     }
 }

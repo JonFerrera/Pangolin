@@ -19,11 +19,15 @@ namespace Pangolin
 
         private const string _gZipFileExtension = ".gz";
 
-        private static readonly char[] _invalidFileNameChars = Path.GetInvalidFileNameChars();
-        private static readonly char[] _invalidPathChars = Path.GetInvalidPathChars();
+        private static readonly char[]
+            _invalidFileNameChars = Path.GetInvalidFileNameChars(),
+            _invalidPathChars = Path.GetInvalidPathChars();
         
-        private const string _exceptionTextFile = "ExceptionLog.txt";
-        private const string _statusTextFile = "StatusLog.txt";
+        private const string
+            _exceptionTextFile = "Exception_Log_{0}.txt",
+            _exceptionInternalTextFile = "Pangolin_Exception_Log_{0}.txt",
+            _statusTextFile = "Status_Log_{0}.txt",
+            _statusInternalTextFile = "Pangolin_Status_Log.txt";
 
         private static readonly XmlReaderSettings _xmlReaderSettings = new XmlReaderSettings()
         {
@@ -58,8 +62,8 @@ namespace Pangolin
                     dataUri = $"data:image/{extension};base64,{base64String}";
                 }
             }
-            catch (ArgumentNullException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (ArgumentException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+            catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
             return dataUri;
         }
@@ -90,6 +94,10 @@ namespace Pangolin
 
             return await CreateFileBytesAsync(fileName, outputBytes, cancellationToken);
         }
+        #endregion
+
+        #region Zip
+
         #endregion
         #endregion
 
@@ -190,7 +198,7 @@ namespace Pangolin
             if (path == null) { throw new ArgumentNullException(nameof(path)); }
 
             string fullPath = string.Empty;
-
+            
             if (IsValidPath(path))
             {
                 try
@@ -203,7 +211,7 @@ namespace Pangolin
             }
             else
             {
-                throw new InvalidOperationException("path is invalid.");
+                throw new InvalidOperationException($"{nameof(path)} is invalid.");
             }
 
             return fullPath;
@@ -211,10 +219,6 @@ namespace Pangolin
 
         public static bool IsValidPath(string path)
         {
-            if (path == null) { throw new ArgumentNullException(nameof(path)); }
-
-            bool isValidLength = path.Length < _maxPathLength;
-
             bool
                 isValidDirectoryPath = false,
                 isValidFileName = false;
@@ -223,6 +227,8 @@ namespace Pangolin
                 directoryPath = string.Empty,
                 fileName = string.Empty;
 
+            bool isValidLength = path?.Length < _maxPathLength;
+            
             if (isValidLength)
             {
                 try
@@ -277,7 +283,7 @@ namespace Pangolin
                         await xmlWriter.WriteRawAsync(content);
                         isCreated = true;
                     }
-                    catch (InvalidOperationException exc) { await ExceptionLayer.HandleAsync(exc); }
+                    catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
                 }
             }
 
@@ -325,6 +331,38 @@ namespace Pangolin
             if (contentBytes == null) { throw new ArgumentNullException(nameof(contentBytes)); }
 
             return await WriteFileAsync(fileName, contentBytes, FileMode.Append, FileAccess.Write, FileShare.Read, cancellationToken);
+        }
+
+        public static bool CopyFile(string sourceFileName, string destinationFileName, bool overwrite = true)
+        {
+            if (sourceFileName == null) { throw new ArgumentNullException(nameof(sourceFileName)); }
+            if (destinationFileName == null) { throw new ArgumentNullException(nameof(destinationFileName)); }
+
+            bool isCopied = false;
+
+            string fullSourceFileName = GetFullPath(sourceFileName);
+            string fullDestinationFileName = GetFullPath(destinationFileName);
+
+            if (string.IsNullOrWhiteSpace(fullSourceFileName))
+            {
+                throw new InvalidOperationException($"{nameof(sourceFileName)} resulted in an invalid path.");
+            }
+            if (string.IsNullOrWhiteSpace(fullDestinationFileName))
+            {
+                throw new InvalidOperationException($"{nameof(destinationFileName)} resulted in an invalid path.");
+            }
+
+            try
+            {
+                File.Copy(fullSourceFileName, fullDestinationFileName, overwrite);
+                isCopied = true;
+            }
+            catch (DirectoryNotFoundException exc) { ExceptionLayer.Handle(exc); throw; }
+            catch (IOException exc) { ExceptionLayer.Handle(exc); throw; }
+            catch (UnauthorizedAccessException exc) { ExceptionLayer.Handle(exc); throw; }
+            catch (NotSupportedException exc) { ExceptionLayer.Handle(exc); throw; }
+
+            return isCopied;
         }
 
         public static async Task<bool> CreateFileAsync(string fileName, string content)
@@ -384,16 +422,16 @@ namespace Pangolin
 
             if (string.IsNullOrWhiteSpace(fullSourceFileName))
             {
-                throw new InvalidOperationException("Source file name resulted in an invalid path.");
+                throw new InvalidOperationException($"{nameof(sourceFileName)} resulted in an invalid path.");
             }
             if (string.IsNullOrWhiteSpace(fullDestinationFileName))
             {
-                throw new InvalidOperationException("Destination file name resulted in an invalid path.");
+                throw new InvalidOperationException($"{nameof(destinationFileName)} resulted in an invalid path.");
             }
 
             try
             {
-                File.Move(fullSourceFileName, destinationFileName);
+                File.Move(fullSourceFileName, fullDestinationFileName);
                 isMoved = true;
             }
             catch (DirectoryNotFoundException exc) { ExceptionLayer.Handle(exc); throw; }
@@ -429,10 +467,10 @@ namespace Pangolin
                         contents = await streamReader.ReadToEndAsync();
                     }
                 }
-                catch (PathTooLongException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                catch (NotSupportedException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                catch (SecurityException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                catch (UnauthorizedAccessException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (PathTooLongException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                catch (NotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                catch (SecurityException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                catch (UnauthorizedAccessException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
             }
 
             return contents;
@@ -463,10 +501,10 @@ namespace Pangolin
                         await fileStream.ReadAsync(contentBytes, 0, contentBytes.Length, cancellationToken);
                     }
                 }
-                catch (PathTooLongException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                catch (NotSupportedException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                catch (SecurityException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                catch (UnauthorizedAccessException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (PathTooLongException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                catch (NotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                catch (SecurityException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                catch (UnauthorizedAccessException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
             }
 
             return contentBytes;
@@ -496,10 +534,10 @@ namespace Pangolin
                     }
                     
                 }
-                catch (PathTooLongException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                catch (NotSupportedException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                catch (SecurityException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-                catch (UnauthorizedAccessException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+                catch (PathTooLongException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                catch (NotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                catch (SecurityException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                catch (UnauthorizedAccessException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
                 fileLines = lines.ToArray();
             }
@@ -531,12 +569,12 @@ namespace Pangolin
 
                 isWritten = true;
             }
-            catch (PathTooLongException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (NotSupportedException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (SecurityException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (UnauthorizedAccessException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (FileNotFoundException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (IOException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+            catch (PathTooLongException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (NotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (SecurityException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (UnauthorizedAccessException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (FileNotFoundException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (IOException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
             return isWritten;
         }
@@ -550,7 +588,7 @@ namespace Pangolin
 
             if (string.IsNullOrWhiteSpace(fullFileName))
             {
-                throw new InvalidOperationException("fileName resulted in an invalid file path.");
+                throw new InvalidOperationException($"{nameof(fileName)} resulted in an invalid file path.");
             }
 
             bool isWritten = false;
@@ -564,12 +602,12 @@ namespace Pangolin
 
                 isWritten = true;
             }
-            catch (PathTooLongException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (NotSupportedException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (SecurityException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (UnauthorizedAccessException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (FileNotFoundException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
-            catch (IOException exc) { await ExceptionLayer.HandleAsync(exc); throw; }
+            catch (PathTooLongException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (NotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (SecurityException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (UnauthorizedAccessException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (FileNotFoundException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (IOException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
 
             return isWritten;
         }
@@ -600,28 +638,72 @@ namespace Pangolin
         #endregion
 
         #region Log
-        public static async Task LogExceptionAsync(string exceptionText)
+        internal static async Task LogExceptionCoreAsync(string exceptionText)
         {
-            string logFile = string.Empty;
-
             try
             {
-
-                logFile = Path.Combine(Directory.GetCurrentDirectory(), _exceptionTextFile);
-                await AppendFileAsync(logFile, exceptionText);
+                string exceptionFile = string.Format(_exceptionInternalTextFile, DiagnosticsLayer.TimestampLongFormatFile);
+                await LogExceptionAsync(exceptionFile, exceptionText);
             }
-            catch (NotSupportedException) { }
-            catch (UnauthorizedAccessException) { }
-            catch (Exception) { }
+            catch (FormatException) { }
+            catch (ArgumentNullException) { }
+            catch (ArgumentOutOfRangeException) { }
+        }
+
+        internal static async Task LogStatusCoreAsync(string message)
+        {
+            try
+            {
+                string statusFile = string.Format(_statusInternalTextFile, DiagnosticsLayer.TimestampLongFormatFile);
+                await LogStatusAsync(statusFile, message);
+            }
+            catch (FormatException) { }
+            catch (ArgumentNullException) { }
+            catch (ArgumentOutOfRangeException) { }
+        }
+
+        public static async Task LogExceptionAsync(string exceptionText)
+        {
+            try
+            {
+                string exceptionFile = string.Format(_exceptionTextFile, DiagnosticsLayer.TimestampLongFormatFile);
+                await LogExceptionAsync(exceptionFile, exceptionText);
+            }
+            catch (FormatException) { }
+            catch (ArgumentNullException) { }
+            catch (ArgumentOutOfRangeException) { }
         }
 
         public static async Task LogStatusAsync(string message)
         {
-            string logFile = string.Empty;
-
             try
             {
-                logFile = Path.Combine(Directory.GetCurrentDirectory(), _statusTextFile);
+                string statusFile = string.Format(_statusTextFile, DiagnosticsLayer.TimestampLongFormatFile);
+                await LogStatusAsync(statusFile, message);
+            }
+            catch (FormatException) { }
+            catch (ArgumentNullException) { }
+            catch (ArgumentOutOfRangeException) { }
+        }
+
+        private static async Task LogExceptionAsync(string exceptionFile, string exceptionText)
+        {
+            try
+            {
+                string logFile = Path.Combine(Directory.GetCurrentDirectory(), exceptionFile);
+                await AppendFileAsync(logFile, exceptionText);
+            }
+            catch (NotSupportedException) { }
+            catch (UnauthorizedAccessException) { }
+            catch (ArgumentNullException) { }
+            catch (ArgumentException) { }
+        }
+
+        private static async Task LogStatusAsync(string statusFile, string message)
+        {
+            try
+            {
+                string logFile = Path.Combine(Directory.GetCurrentDirectory(), statusFile);
 
                 message += $" [{DiagnosticsLayer.TimestampLongFormat}]";
 
@@ -629,7 +711,8 @@ namespace Pangolin
             }
             catch (NotSupportedException) { }
             catch (UnauthorizedAccessException) { }
-            catch (Exception) { }
+            catch (ArgumentNullException) { }
+            catch (ArgumentException) { }
         }
         #endregion
     }
