@@ -103,5 +103,14 @@ namespace Pangolin.Properties {
                 return ((int)(this["EventLogMaxAge"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("60")]
+        public int CommandTimeOut {
+            get {
+                return ((int)(this["CommandTimeOut"]));
+            }
+        }
     }
 }

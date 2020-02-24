@@ -149,7 +149,7 @@ namespace Pangolin
                 try
                 {
                     using (OdbcTransaction odbcTransaction = odbcConnection.BeginTransaction())
-                    using (OdbcCommand odbcCommand = new OdbcCommand(query, odbcConnection, odbcTransaction) { CommandType = commandType })
+                    using (OdbcCommand odbcCommand = new OdbcCommand(query, odbcConnection, odbcTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
                         try
                         {
@@ -194,7 +194,7 @@ namespace Pangolin
                 try
                 {
                     using (OdbcTransaction odbcTransaction = odbcConnection.BeginTransaction())
-                    using (OdbcCommand odbcCommand = new OdbcCommand(query, odbcConnection, odbcTransaction) { CommandType = commandType })
+                    using (OdbcCommand odbcCommand = new OdbcCommand(query, odbcConnection, odbcTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
                         odbcCommand.Parameters.AddRange(odbcParameters);
 
@@ -236,7 +236,7 @@ namespace Pangolin
                 try
                 {
                     using (OdbcTransaction odbcTransaction = odbcConnection.BeginTransaction())
-                    using (OdbcCommand odbcCommand = new OdbcCommand(query, odbcConnection, odbcTransaction) { CommandType = commandType })
+                    using (OdbcCommand odbcCommand = new OdbcCommand(query, odbcConnection, odbcTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     using (OdbcDataAdapter odbcDataAdapter = new OdbcDataAdapter(odbcCommand))
                     {
                         try
@@ -285,7 +285,7 @@ namespace Pangolin
                 try
                 {
                     using (OdbcTransaction odbcTransaction = odbcConnection.BeginTransaction())
-                    using (OdbcCommand odbcCommand = new OdbcCommand(query, odbcConnection, odbcTransaction) { CommandType = commandType })
+                    using (OdbcCommand odbcCommand = new OdbcCommand(query, odbcConnection, odbcTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
                         odbcCommand.Parameters.AddRange(odbcParameters);
 
@@ -337,7 +337,7 @@ namespace Pangolin
                 try
                 {
                     using (OdbcTransaction odbcTrans = odbcConn.BeginTransaction())
-                    using (OdbcCommand odbcCmd = new OdbcCommand(query, odbcConn, odbcTrans) { CommandType = commandType })
+                    using (OdbcCommand odbcCmd = new OdbcCommand(query, odbcConn, odbcTrans) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
                         try
                         {
@@ -378,7 +378,7 @@ namespace Pangolin
                 try
                 {
                     using (OdbcTransaction odbcTrans = odbcConn.BeginTransaction())
-                    using (OdbcCommand odbcCmd = new OdbcCommand(query, odbcConn, odbcTrans) { CommandType = commandType })
+                    using (OdbcCommand odbcCmd = new OdbcCommand(query, odbcConn, odbcTrans) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
                         odbcCmd.Parameters.AddRange(odbcParameters);
 
@@ -421,7 +421,7 @@ namespace Pangolin
                 try
                 {
                     using (OdbcTransaction odbcTransaction = odbcConnection.BeginTransaction())
-                    using (OdbcCommand odbcCommand = new OdbcCommand(query, odbcConnection, odbcTransaction) { CommandType = commandType })
+                    using (OdbcCommand odbcCommand = new OdbcCommand(query, odbcConnection, odbcTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
                         try
                         {
@@ -463,7 +463,7 @@ namespace Pangolin
                         {
                             CommandType commandType = await DetermineCommandTypeAsync(query);
 
-                            using (OdbcCommand odbcCommand = new OdbcCommand(query, odbcConnection, odbcTransaction) { CommandType = commandType })
+                            using (OdbcCommand odbcCommand = new OdbcCommand(query, odbcConnection, odbcTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                             {
                                 try
                                 {
@@ -508,7 +508,7 @@ namespace Pangolin
                 try
                 {
                     using (OdbcTransaction odbcTransaction = odbcConnection.BeginTransaction())
-                    using (OdbcCommand odbcCommand = new OdbcCommand(query, odbcConnection, odbcTransaction) { CommandType = commandType })
+                    using (OdbcCommand odbcCommand = new OdbcCommand(query, odbcConnection, odbcTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
                         odbcCommand.Parameters.AddRange(odbcParameters);
 
@@ -555,7 +555,7 @@ namespace Pangolin
                         {
                             if (odbcParameters?.Length > 0)
                             {
-                                using (OdbcCommand odbcCommand = new OdbcCommand(query, odbcConnection, odbcTransaction) { CommandType = commandType })
+                                using (OdbcCommand odbcCommand = new OdbcCommand(query, odbcConnection, odbcTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                                 {
                                     odbcCommand.Parameters.AddRange(odbcParameters);
 
@@ -598,7 +598,7 @@ namespace Pangolin
                 try
                 {
                     using (OdbcTransaction odbcTransaction = odbcConnection.BeginTransaction())
-                    using (OdbcCommand odbcCommand = new OdbcCommand(query, odbcConnection, odbcTransaction) { CommandType = commandType })
+                    using (OdbcCommand odbcCommand = new OdbcCommand(query, odbcConnection, odbcTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
                         try
                         {
@@ -638,7 +638,7 @@ namespace Pangolin
                 try
                 {
                     using (OdbcTransaction odbcTransaction = odbcConnection.BeginTransaction())
-                    using (OdbcCommand odbcCommand = new OdbcCommand(query, odbcConnection, odbcTransaction) { CommandType = commandType })
+                    using (OdbcCommand odbcCommand = new OdbcCommand(query, odbcConnection, odbcTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
                         odbcCommand.Parameters.AddRange(odbcParameters);
 
@@ -680,7 +680,7 @@ namespace Pangolin
                 try
                 {
                     using (OdbcTransaction odbcTransaction = odbcConnection.BeginTransaction())
-                    using (OdbcCommand odbcCommand = new OdbcCommand(query, odbcConnection, odbcTransaction) { CommandType = commandType })
+                    using (OdbcCommand odbcCommand = new OdbcCommand(query, odbcConnection, odbcTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
                         odbcCommand.Parameters.AddRange(odbcParameters);
 
@@ -741,7 +741,7 @@ namespace Pangolin
                 try
                 {
                     using (OleDbTransaction oleDbTransaction = oleDbConnection.BeginTransaction())
-                    using (OleDbCommand oleDbCommand = new OleDbCommand(query, oleDbConnection, oleDbTransaction) { CommandType = commandType })
+                    using (OleDbCommand oleDbCommand = new OleDbCommand(query, oleDbConnection, oleDbTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
                         try
                         {
@@ -786,7 +786,7 @@ namespace Pangolin
                 try
                 {
                     using (OleDbTransaction oleDbTransaction = oleDbConnection.BeginTransaction())
-                    using (OleDbCommand oleDbCommand = new OleDbCommand(query, oleDbConnection, oleDbTransaction) { CommandType = commandType })
+                    using (OleDbCommand oleDbCommand = new OleDbCommand(query, oleDbConnection, oleDbTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
                         oleDbCommand.Parameters.AddRange(oleDbParameters);
 
@@ -829,7 +829,7 @@ namespace Pangolin
                 try
                 {
                     using (OleDbTransaction oleDbTransaction = oleDbConnection.BeginTransaction())
-                    using (OleDbCommand oleDbCommand = new OleDbCommand(query, oleDbConnection, oleDbTransaction) { CommandType = commandType })
+                    using (OleDbCommand oleDbCommand = new OleDbCommand(query, oleDbConnection, oleDbTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     using (OleDbDataAdapter oleDbDataAdapter = new OleDbDataAdapter(oleDbCommand))
                     {
                         try
@@ -878,7 +878,7 @@ namespace Pangolin
                 try
                 {
                     using (OleDbTransaction oleDbTransaction = oleDbConnection.BeginTransaction())
-                    using (OleDbCommand oleDbCommand = new OleDbCommand(query, oleDbConnection, oleDbTransaction) { CommandType = commandType })
+                    using (OleDbCommand oleDbCommand = new OleDbCommand(query, oleDbConnection, oleDbTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
                         oleDbCommand.Parameters.AddRange(oleDbParameters);
 
@@ -930,7 +930,7 @@ namespace Pangolin
                 try
                 {
                     using (OleDbTransaction oleDbTransaction = oleDbConn.BeginTransaction())
-                    using (OleDbCommand oleDbCommand = new OleDbCommand(query, oleDbConn, oleDbTransaction) { CommandType = commandType })
+                    using (OleDbCommand oleDbCommand = new OleDbCommand(query, oleDbConn, oleDbTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
                         try
                         {
@@ -971,7 +971,7 @@ namespace Pangolin
                 try
                 {
                     using (OleDbTransaction oleDbTransaction = oleDbConn.BeginTransaction())
-                    using (OleDbCommand oleDbCommand = new OleDbCommand(query, oleDbConn, oleDbTransaction) { CommandType = commandType })
+                    using (OleDbCommand oleDbCommand = new OleDbCommand(query, oleDbConn, oleDbTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
                         oleDbCommand.Parameters.AddRange(oleDbParameters);
 
@@ -1014,7 +1014,7 @@ namespace Pangolin
                 try
                 {
                     using (OleDbTransaction oleDbTransaction = oleDbConn.BeginTransaction())
-                    using (OleDbCommand oleDbCommand = new OleDbCommand(query, oleDbConn, oleDbTransaction) { CommandType = commandType })
+                    using (OleDbCommand oleDbCommand = new OleDbCommand(query, oleDbConn, oleDbTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
                         try
                         {
@@ -1056,7 +1056,7 @@ namespace Pangolin
                         {
                             CommandType commandType = await DetermineCommandTypeAsync(query);
 
-                            using (OleDbCommand oleDbCommand = new OleDbCommand(query, oleDbConnection, oleDbTransaction) { CommandType = commandType })
+                            using (OleDbCommand oleDbCommand = new OleDbCommand(query, oleDbConnection, oleDbTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                             {
                                 try
                                 {
@@ -1101,7 +1101,7 @@ namespace Pangolin
                 try
                 {
                     using (OleDbTransaction oleDbTransaction = oleDbConnection.BeginTransaction())
-                    using (OleDbCommand oleDbCommand = new OleDbCommand(query, oleDbConnection, oleDbTransaction) { CommandType = commandType })
+                    using (OleDbCommand oleDbCommand = new OleDbCommand(query, oleDbConnection, oleDbTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
                         oleDbCommand.Parameters.AddRange(oleDbParameters);
 
@@ -1148,7 +1148,7 @@ namespace Pangolin
                         {
                             if (oleDbParameters?.Length > 0)
                             {
-                                using (OleDbCommand oleDbCommand = new OleDbCommand(query, oleDbConnection, oleDbTransaction) { CommandType = commandType })
+                                using (OleDbCommand oleDbCommand = new OleDbCommand(query, oleDbConnection, oleDbTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                                 {
                                     oleDbCommand.Parameters.AddRange(oleDbParameters);
 
@@ -1191,7 +1191,7 @@ namespace Pangolin
                 try
                 {
                     using (OleDbTransaction oleDbTransaction = oleDbConnection.BeginTransaction())
-                    using (OleDbCommand oleDbCommand = new OleDbCommand(query, oleDbConnection, oleDbTransaction) { CommandType = commandType })
+                    using (OleDbCommand oleDbCommand = new OleDbCommand(query, oleDbConnection, oleDbTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
                         try
                         {
@@ -1231,7 +1231,7 @@ namespace Pangolin
                 try
                 {
                     using (OleDbTransaction oleDbTransaction = oleDbConnection.BeginTransaction())
-                    using (OleDbCommand oleDbCommand = new OleDbCommand(query, oleDbConnection, oleDbTransaction) { CommandType = commandType })
+                    using (OleDbCommand oleDbCommand = new OleDbCommand(query, oleDbConnection, oleDbTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
                         oleDbCommand.Parameters.AddRange(oleDbParameters);
 
@@ -1273,7 +1273,7 @@ namespace Pangolin
                 try
                 {
                     using (OleDbTransaction oleDbTransaction = oleDbConnection.BeginTransaction())
-                    using (OleDbCommand oleDbCommand = new OleDbCommand(query, oleDbConnection, oleDbTransaction) { CommandType = commandType })
+                    using (OleDbCommand oleDbCommand = new OleDbCommand(query, oleDbConnection, oleDbTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
                         oleDbCommand.Parameters.AddRange(oleDbParameters);
 
@@ -1334,7 +1334,7 @@ namespace Pangolin
                 try
                 {
                     using (SqlTransaction sqlTransaction = sqlConnection.BeginTransaction())
-                    using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnection, sqlTransaction) { CommandType = commandType })
+                    using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnection, sqlTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
                         try
                         {
@@ -1383,7 +1383,7 @@ namespace Pangolin
                 try
                 {
                     using (SqlTransaction sqlTransaction = sqlConnection.BeginTransaction())
-                    using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnection, sqlTransaction) { CommandType = commandType })
+                    using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnection, sqlTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
                         sqlCommand.Parameters.AddRange(sqlParameters);
 
@@ -1430,7 +1430,7 @@ namespace Pangolin
                 try
                 {
                     using (SqlTransaction sqlTransaction = sqlConnection.BeginTransaction())
-                    using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnection, sqlTransaction) { CommandType = commandType })
+                    using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnection, sqlTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     using (SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(sqlCommand))
                     {
                         try
@@ -1479,7 +1479,7 @@ namespace Pangolin
                 try
                 {
                     using (SqlTransaction sqlTransaction = sqlConnection.BeginTransaction())
-                    using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnection, sqlTransaction) { CommandType = commandType })
+                    using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnection, sqlTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
                         sqlCommand.Parameters.AddRange(sqlParameters);
 
@@ -1531,7 +1531,7 @@ namespace Pangolin
                 try
                 {
                     using (SqlTransaction sqlTransaction = sqlConnection.BeginTransaction())
-                    using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnection, sqlTransaction) { CommandType = commandType })
+                    using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnection, sqlTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
                         try
                         {
@@ -1575,7 +1575,7 @@ namespace Pangolin
                 try
                 {
                     using (SqlTransaction sqlTransaction = sqlConnection.BeginTransaction())
-                    using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnection, sqlTransaction) { CommandType = commandType })
+                    using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnection, sqlTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
                         sqlCommand.Parameters.AddRange(sqlParameters);
 
@@ -1621,7 +1621,7 @@ namespace Pangolin
                     CommandType commandType = await DetermineCommandTypeAsync(query);
 
                     using (SqlTransaction sqlTransaction = sqlConnection.BeginTransaction())
-                    using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnection, sqlTransaction) { CommandType = commandType })
+                    using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnection, sqlTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
                         try
                         {
@@ -1667,7 +1667,7 @@ namespace Pangolin
                         {
                             CommandType commandType = await DetermineCommandTypeAsync(query);
 
-                            using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnection, sqlTransaction) { CommandType = commandType })
+                            using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnection, sqlTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                             {
                                 try
                                 {
@@ -1712,7 +1712,7 @@ namespace Pangolin
                     CommandType commandType = await DetermineCommandTypeAsync(query);
 
                     using (SqlTransaction sqlTransaction = sqlConnection.BeginTransaction())
-                    using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnection, sqlTransaction) { CommandType = commandType })
+                    using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnection, sqlTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
                         sqlCommand.Parameters.AddRange(sqlParameters);
 
@@ -1763,7 +1763,7 @@ namespace Pangolin
                         {
                             if (sqlParameters?.Length > 0)
                             {
-                                using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnection, sqlTransaction) { CommandType = commandType })
+                                using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnection, sqlTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                                 {
                                     sqlCommand.Parameters.AddRange(sqlParameters);
 
@@ -1811,7 +1811,7 @@ namespace Pangolin
                 try
                 {
                     using (SqlTransaction sqlTransaction = sqlConnection.BeginTransaction())
-                    using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnection, sqlTransaction) { CommandType = commandType })
+                    using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnection, sqlTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
                         try
                         {
@@ -1854,7 +1854,7 @@ namespace Pangolin
                 try
                 {
                     using (SqlTransaction sqlTransaction = sqlConnection.BeginTransaction())
-                    using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnection, sqlTransaction) { CommandType = commandType })
+                    using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnection, sqlTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
                         sqlCommand.Parameters.AddRange(sqlParameters);
 
@@ -1899,7 +1899,7 @@ namespace Pangolin
                 try
                 {
                     using (SqlTransaction sqlTransaction = sqlConnection.BeginTransaction())
-                    using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnection, sqlTransaction) { CommandType = commandType })
+                    using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnection, sqlTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
                         sqlCommand.Parameters.AddRange(sqlParameters);
 

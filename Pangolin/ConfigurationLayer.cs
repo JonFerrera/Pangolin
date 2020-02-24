@@ -297,6 +297,14 @@ namespace Pangolin
             }
         }
 
+        public static int CommandTimeOut
+        {
+            get
+            {
+                return Settings.Default.CommandTimeOut;
+            }
+        }
+
         public static string DeveloperMailFrom
         {
             get
