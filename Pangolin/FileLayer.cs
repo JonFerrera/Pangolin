@@ -17,7 +17,9 @@ namespace Pangolin
 
         private const int _nullIndex = -1;
 
-        private const string _gZipFileExtension = ".gz";
+        private const string 
+            _gZipFileExtension = ".gz",
+            _zipFileExtension = ".zip";
 
         private static readonly char[]
             _invalidFileNameChars = Path.GetInvalidFileNameChars(),
@@ -27,7 +29,7 @@ namespace Pangolin
             _exceptionTextFile = "Exception_Log_{0}.txt",
             _exceptionInternalTextFile = "Pangolin_Exception_Log_{0}.txt",
             _statusTextFile = "Status_Log_{0}.txt",
-            _statusInternalTextFile = "Pangolin_Status_Log.txt";
+            _statusInternalTextFile = "Pangolin_Status_Log_{0}.txt";
 
         private static readonly XmlReaderSettings _xmlReaderSettings = new XmlReaderSettings()
         {
@@ -71,7 +73,7 @@ namespace Pangolin
         
         #region File Compression
         #region GZip
-        public static async Task<bool> GZipCompress(string fileName, CancellationToken cancellationToken)
+        public static async Task<bool> GZipAsync(string fileName, CancellationToken cancellationToken)
         {
             if (fileName == null) { throw new ArgumentNullException(nameof(fileName)); }
 
@@ -84,7 +86,7 @@ namespace Pangolin
             return await CreateFileBytesAsync(fileName, outputBytes, cancellationToken);
         }
 
-        public static async Task<bool> GZipDecompress(string fileName, CancellationToken cancellationToken)
+        public static async Task<bool> UnGZipAsync(string fileName, CancellationToken cancellationToken)
         {
             if (fileName == null) { throw new ArgumentNullException(nameof(fileName)); }
 
@@ -97,7 +99,109 @@ namespace Pangolin
         #endregion
 
         #region Zip
+        public static async Task ZipAsync(string sourcePath, string zipFile)
+        {
+            if (sourcePath == null) { throw new ArgumentNullException(nameof(sourcePath)); }
+            if (zipFile == null) { throw new ArgumentNullException(nameof(zipFile)); }
 
+            string[] sourceFiles = GetFiles(sourcePath);
+
+            try
+            {
+                using (FileStream fileStreamZipArchive = new FileStream(zipFile, FileMode.Create))
+                using (ZipArchive zipArchive = new ZipArchive(fileStreamZipArchive, ZipArchiveMode.Create))
+                {
+                    try
+                    {
+                        Uri baseUri = new Uri(sourcePath);
+
+                        foreach (string sourceFile in sourceFiles)
+                        {
+                            Uri
+                                relativeUri = new Uri(sourceFile),
+                                zipArchiveEntryUri = baseUri.MakeRelativeUri(relativeUri);
+
+                            string relativePath = TextLayer.UrlDecode(zipArchiveEntryUri.ToString());
+
+                            ZipArchiveEntry zipArchiveEntry = zipArchive.CreateEntry(relativePath, CompressionLevel.Optimal);
+
+                            using (Stream stream = zipArchiveEntry.Open())
+                            using (FileStream fileStreamZipArchiveEntry = new FileStream(sourceFile, FileMode.Open, FileAccess.Read, FileShare.Read))
+                            {
+                                await fileStreamZipArchiveEntry.CopyToAsync(stream);
+                            }
+                        }
+                    }
+                    catch (UriFormatException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                    catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+                }
+            }
+            catch (NotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (SecurityException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (FileNotFoundException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (DirectoryNotFoundException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (PathTooLongException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (IOException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (InvalidDataException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+        }
+
+        public static async Task UnZipAsync(string zipFile, string extractPath)
+        {
+            if (zipFile == null) { throw new ArgumentNullException(nameof(zipFile)); }
+            if (extractPath == null) { throw new ArgumentNullException(nameof(extractPath)); }
+
+            try
+            {
+                extractPath = GetFullPath(extractPath);
+            }
+            catch (ArgumentException exc) { ExceptionLayer.Handle(exc); throw; }
+            catch (SecurityException exc) { ExceptionLayer.Handle(exc); throw; }
+            catch (NotSupportedException exc) { ExceptionLayer.Handle(exc); throw; }
+            catch (PathTooLongException exc) { ExceptionLayer.Handle(exc); throw; }
+
+            if (!extractPath.EndsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.Ordinal))
+            {
+                extractPath += Path.DirectorySeparatorChar;
+            }
+            
+            try
+            {
+                Directory.CreateDirectory(extractPath);
+
+                using (FileStream fileStreamZipArchive = new FileStream(zipFile, FileMode.Open))
+                using (ZipArchive zipArchive = new ZipArchive(fileStreamZipArchive, ZipArchiveMode.Read))
+                {
+                    if (zipArchive.Entries?.Count > 0)
+                    {
+                        foreach (ZipArchiveEntry zipArchiveEntry in zipArchive.Entries)
+                        {
+                            string 
+                                destinationPath = GetFullPath(Path.Combine(extractPath, zipArchiveEntry.FullName)),
+                                directoryName = Path.GetDirectoryName(destinationPath);
+
+                            if (destinationPath.StartsWith(extractPath, StringComparison.Ordinal))
+                            {
+                                Directory.CreateDirectory(directoryName);
+
+                                using (Stream stream = zipArchiveEntry.Open())
+                                using (FileStream fileStreamZipArchiveEntry = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.None))
+                                {
+                                    await stream.CopyToAsync(fileStreamZipArchiveEntry);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (UnauthorizedAccessException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (NotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (SecurityException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (FileNotFoundException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (DirectoryNotFoundException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (PathTooLongException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (IOException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+            catch (InvalidDataException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
+        }
         #endregion
         #endregion
 
@@ -169,7 +273,7 @@ namespace Pangolin
             }
             else
             {
-                throw new InvalidOperationException("path is invalid.");
+                throw new InvalidOperationException($"{nameof(path)} is invalid.");
             }
 
             return fileName;
@@ -191,6 +295,29 @@ namespace Pangolin
             }
 
             return fileNameWithoutExtension;
+        }
+
+        public static string[] GetFiles(string path)
+        {
+            string[] files = null;
+
+            if (IsDirectory(path))
+            {
+                try
+                {
+                    files = Directory.GetFiles(path, "*", SearchOption.AllDirectories);
+                }
+                catch (PathTooLongException exc) { ExceptionLayer.Handle(exc); throw; }
+                catch (DirectoryNotFoundException exc) { ExceptionLayer.Handle(exc); throw; }
+                catch (IOException exc) { ExceptionLayer.Handle(exc); throw; }
+                catch (UnauthorizedAccessException exc) { ExceptionLayer.Handle(exc); throw; }
+            }
+            else
+            {
+                files = new string[] { path };
+            }
+
+            return files;
         }
 
         public static string GetFullPath(string path)
@@ -215,6 +342,24 @@ namespace Pangolin
             }
 
             return fullPath;
+        }
+
+        public static bool IsDirectory(string path)
+        {
+            if (path == null) { throw new ArgumentNullException(nameof(path)); }
+
+            try
+            {
+                FileAttributes fileAttributes = File.GetAttributes(path);
+
+                return fileAttributes.HasFlag(FileAttributes.Directory);
+            }
+            catch (PathTooLongException exc) { ExceptionLayer.Handle(exc); throw; }
+            catch (NotSupportedException exc) { ExceptionLayer.Handle(exc); throw; }
+            catch (FileNotFoundException exc) { ExceptionLayer.Handle(exc); throw; }
+            catch (DirectoryNotFoundException exc) { ExceptionLayer.Handle(exc); throw; }
+            catch (IOException exc) { ExceptionLayer.Handle(exc); throw; }
+            catch (UnauthorizedAccessException exc) { ExceptionLayer.Handle(exc); throw; }
         }
 
         public static bool IsValidPath(string path)
@@ -408,6 +553,20 @@ namespace Pangolin
             catch (UnauthorizedAccessException exc) { ExceptionLayer.Handle(exc); throw; }
 
             return isDeleted;
+        }
+
+        public static bool FileExists(string fileName)
+        {
+            if (fileName == null) { throw new ArgumentNullException(nameof(fileName)); }
+
+            string fullFileName = GetFullPath(fileName);
+
+            if (string.IsNullOrWhiteSpace(fullFileName))
+            {
+                throw new InvalidOperationException("fileName resulted in an invalid path.");
+            }
+
+            return File.Exists(fullFileName);
         }
 
         public static bool MoveFile(string sourceFileName, string destinationFileName)

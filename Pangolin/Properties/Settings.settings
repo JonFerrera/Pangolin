@@ -32,5 +32,8 @@
     <Setting Name="CommandTimeOut" Type="System.Int32" Scope="Application">
       <Value Profile="(Default)">60</Value>
     </Setting>
+    <Setting Name="UserAgentImpersonate" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

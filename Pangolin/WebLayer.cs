@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Pangolin
 {
-    static class WebLayer
+    public static class WebLayer
     {
         private const int _zeroIndex = 0;
 
@@ -977,6 +977,68 @@ namespace Pangolin
             catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
 
             return string.Empty;
+        }
+
+        public static async Task DownloadFileAsync(Uri remoteAddress, Uri localAddress)
+        {
+            ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072; // TLS 1.2
+            try
+            {
+                using (WebClient webClient = new WebClient())
+                {
+                    webClient.Headers.Add("User-Agent", ConfigurationLayer.UserAgentImpersonate);
+                    webClient.Headers.Add("Referer", remoteAddress.GetLeftPart(UriPartial.Authority));
+                    webClient.Headers.Add("Host", remoteAddress.Host);
+                    webClient.DownloadFile(remoteAddress, localAddress.LocalPath);
+
+                    while (webClient.IsBusy) { }
+                }
+            }
+            catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (WebException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+        }
+
+        public static async Task DownloadFileAsync(Uri remoteAddress, Uri localAddress, string username, string password)
+        {
+            ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072; // TLS 1.2
+            try
+            {
+                using (WebClient webClient = new WebClient())
+                {
+                    webClient.Headers.Add(HttpRequestHeader.Authorization, GetBasicAuthenticationHeader(username, password));
+                    webClient.DownloadFileAsync(remoteAddress, localAddress.LocalPath);
+                }
+            }
+            catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (WebException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+        }
+
+        public static async Task DownloadFilesAsync((Uri remoteAddress, Uri localAddress)[] files)
+        {
+            ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072; // TLS 1.2
+            try
+            {
+                using (WebClient webClient = new WebClient())
+                {
+                    foreach ((Uri remoteAddress, Uri localAddress) in files)
+                    {
+                        if (!FileLayer.FileExists(localAddress.LocalPath))
+                        {
+                            webClient.Headers.Add("User-Agent", ConfigurationLayer.UserAgentImpersonate);
+                            webClient.Headers.Add("Referer", remoteAddress.GetLeftPart(UriPartial.Authority));
+                            webClient.Headers.Add("Host", remoteAddress.Host);
+                            webClient.DownloadFile(remoteAddress, localAddress.LocalPath);
+
+                            while (webClient.IsBusy) { await Task.Delay(500); }
+                        }
+                    }
+                }
+            }
+            catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (WebException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
         }
 
         public static async Task<string> UploadAsync(Uri address, string data)

@@ -1934,7 +1934,7 @@ namespace Pangolin
         #region Database Scripting
         public static async Task<DataTable> GetDatabaseTablesAsync(string connectionString, string tableCatalog, string tableSchema, CancellationToken cancellationToken)
         {
-            string query = "select distinct isc.TABLE_NAME from information_schema.columns isc where isc.TABLE_CATALOG = @TableCatalog and isc.TABLE_SCHEMA = @TableSchema order by isc.TABLE_NAME";
+            string query = "SELECT DISTINCT isc.TABLE_NAME FROM INFORMATION_SCHEMA.COLUMNS isc WHERE isc.TABLE_CATALOG = @TableCatalog AND isc.TABLE_SCHEMA = @TableSchema ORDER BY isc.TABLE_NAME";
 
             SqlParameter[] sqlParameters = new SqlParameter[]
             {
@@ -1947,7 +1947,21 @@ namespace Pangolin
 
         public static async Task<DataTable> GetDatabaseColumnsAsync(string connectionString, string tableCatalog, string tableSchema, string tableName, CancellationToken cancellationToken)
         {
-            string query = "select isc.COLUMN_NAME, isc.DATA_TYPE from information_schema.columns isc where isc.TABLE_CATALOG = @TableCatalog and isc.TABLE_SCHEMA = @TableSchema and isc.TABLE_NAME = @TableName order by isc.ORDINAL_POSITION";
+            string query = "SELECT isc.COLUMN_NAME, isc.COLUMN_DEFAULT, isc.IS_NULLABLE, isc.DATA_TYPE, isc.CHARACTER_MAXIMUM_LENGTH, isc.NUMERIC_PRECISION, isc.NUMERIC_SCALE, isc.DATETIME_PRECISION FROM INFORMATION_SCHEMA.COLUMNS isc WHERE isc.TABLE_CATALOG = @TableCatalog AND isc.TABLE_SCHEMA = @TableSchema AND isc.TABLE_NAME = @TableName ORDER BY isc.ORDINAL_POSITION";
+
+            SqlParameter[] sqlParameters = new SqlParameter[]
+            {
+                new SqlParameter("@TableCatalog", tableCatalog) { SqlDbType = SqlDbType.NVarChar },
+                new SqlParameter("@TableSchema", tableSchema) { SqlDbType = SqlDbType.NVarChar },
+                new SqlParameter("@TableName", tableName) { SqlDbType = SqlDbType.NVarChar }
+            };
+
+            return await SQLReadDataTableAsync(connectionString, query, sqlParameters, cancellationToken);
+        }
+
+        public static async Task<DataTable> GetDatabaseTablePrimaryKeysAsync(string connectionString, string tableCatalog, string tableSchema, string tableName, CancellationToken cancellationToken)
+        {
+            string query = "SELECT iskcu.COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE iskcu WHERE OBJECTPROPERTY(OBJECT_ID(iskcu.CONSTRAINT_SCHEMA + '.' + QUOTENAME(iskcu.CONSTRAINT_NAME)), 'IsPrimaryKey') = 1 AND iskcu.TABLE_CATALOG = @TableCatalog AND iskcu.TABLE_SCHEMA = @TableSchema AND iskcu.TABLE_NAME = @TableName ORDER BY iskcu.ORDINAL_POSITION";
 
             SqlParameter[] sqlParameters = new SqlParameter[]
             {

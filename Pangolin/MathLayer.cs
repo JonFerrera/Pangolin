@@ -257,6 +257,18 @@ namespace Pangolin
         #endregion
         #endregion
 
+        #region Basic - Trigonometry
+        public static double ConvertToDegrees(double radians)
+        {
+            return (180D / Math.PI) * radians;
+        }
+
+        public static double ConvertToRadians(double degrees)
+        {
+            return (Math.PI / 180D) * degrees;
+        }
+        #endregion
+
         #region General
         public static (decimal arithmeticMean, decimal geometricMean, decimal harmonicMean) Mean(decimal[] elements)
         {

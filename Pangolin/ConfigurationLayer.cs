@@ -362,6 +362,14 @@ namespace Pangolin
                 return Settings.Default.EventLogMaxAge;
             }
         }
+
+        public static string UserAgentImpersonate
+        {
+            get
+            {
+                return Settings.Default.UserAgentImpersonate;
+            }
+        }
         #endregion
     }
 }

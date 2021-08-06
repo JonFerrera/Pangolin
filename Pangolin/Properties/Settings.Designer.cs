@@ -112,5 +112,15 @@ namespace Pangolin.Properties {
                 return ((int)(this["CommandTimeOut"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87." +
+            "0.4280.88 Safari/537.36")]
+        public string UserAgentImpersonate {
+            get {
+                return ((string)(this["UserAgentImpersonate"]));
+            }
+        }
     }
 }

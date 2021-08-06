@@ -4,21 +4,32 @@ using static System.Math;
 
 namespace Pangolin
 {
-    class GlobalizationLayer
+    public static class GlobalizationLayer
     {
-        private const double _one = 1D;
-        private const double _two = 2D;
-        private const double _five = 5D;
-        private const double _nine = 9D;
-        private const double _thirtyTwo = 32D;
+        private const double
+            _one = 1D,
+            _two = 2D,
+            _three = 3D,
+            _four = 4D,
+            _five = 5D,
+            _nine = 9D,
+            _twelve = 12D,
+            _sixteen = 16D,
+            _thirtyTwo = 32D;
 
-        private const double _celsiusToKelvin = 273.15D;
-        private const double _feetToMeters = 0.3048D;
+        private const double 
+            _celsiusToKelvin = 273.15D,
+            _feetToMeters = 0.3048D;
 
-        private const int _seven = 7;
-        private const int _ten = 10;
+        private const int 
+            _seven = 7,
+            _ten = 10;
 
-        private const double _earthRadiusMeters = 6371008.8D;
+        private const double
+            _earthRadiusMeters = 6371008.8D,        // Mean radius.
+            _earthRadiusEquatorMeters = 6378137.0D, // Semi-major axis.
+            _earthRadiusPolarMeters = 6356752.3D,   // Semi-minor axis.
+            _earthFlattening = _one / 298.257223563D;
 
         public static readonly TimeZoneInfo _localTimeZoneInfo = TimeZoneInfo.Local;
         public static readonly TimeZoneInfo _utcTimeZoneInfo = TimeZoneInfo.Utc;
@@ -107,11 +118,11 @@ namespace Pangolin
         #region Location
         public static double HaversineFormula(double xLatitude, double xLongitude, double yLatitude, double yLongitude)
         {
-            var deltaLongitude = yLongitude - xLongitude;
-            var deltaLatitude = yLatitude - xLatitude;
+            var deltaLongitude = MathLayer.ConvertToRadians(yLongitude - xLongitude);
+            var deltaLatitude = MathLayer.ConvertToRadians(yLatitude - xLatitude);
 
-            var a = Pow(Sin(deltaLatitude / _two), _two) * Cos(xLatitude) * Cos(yLatitude) * Pow(Sin(deltaLongitude / _two), _two);
-            var c = _two * Asin(Min(_one, Sqrt(a)));
+            var a = Sin(deltaLatitude / _two) * Sin(deltaLatitude / _two) + Cos(MathLayer.ConvertToRadians(xLatitude)) * Cos(MathLayer.ConvertToRadians(yLatitude)) * Pow(Sin(deltaLongitude / _two), _two);
+            var c = _two * Atan2(Sqrt(a), Sqrt(_one - a));
 
             return _earthRadiusMeters * c;
         }
