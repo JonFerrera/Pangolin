@@ -141,11 +141,7 @@ namespace Pangolin
             {
                 return Convert.ToDecimal(z);
             }
-            catch (OverflowException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (OverflowException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
         private static decimal Sqrt(decimal givenNumber)
         {
@@ -157,11 +153,7 @@ namespace Pangolin
             {
                 return Convert.ToDecimal(principalRoot);
             }
-            catch (OverflowException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (OverflowException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
         #endregion
 
@@ -699,11 +691,7 @@ namespace Pangolin
             {
                 return Distance(x1, x2) / timeSpan.TotalSeconds;
             }
-            catch (DivideByZeroException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (DivideByZeroException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
         #endregion
 
@@ -762,12 +750,8 @@ namespace Pangolin
             {
                 return new DateTime(milliseconds * TimeSpan.TicksPerMillisecond, DateTimeKind.Utc);
             }
-            catch (ArgumentOutOfRangeException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
-            
+            catch (ArgumentOutOfRangeException exc) { ExceptionLayer.CoreHandle(exc); throw; }
+
         }
         #endregion
 
@@ -1448,11 +1432,7 @@ namespace Pangolin
             {
                 return _random.Next(maxValue + 1);
             }
-            catch (ArgumentOutOfRangeException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (ArgumentOutOfRangeException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
 
         public static int RandomInteger(int minValue, int maxValue)
@@ -1461,11 +1441,7 @@ namespace Pangolin
             {
                 return _random.Next(minValue, maxValue + 1);
             }
-            catch (ArgumentOutOfRangeException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (ArgumentOutOfRangeException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
 
         public static void RandomIntegers(int[] values)
@@ -1527,11 +1503,22 @@ namespace Pangolin
             {
                 _random.NextBytes(byteBuffer);
             }
-            catch (ArgumentNullException exc)
+            catch (ArgumentNullException exc) { ExceptionLayer.CoreHandle(exc); throw; }
+        }
+
+        public static int DiceRoll(int numberDice, int diceSides)
+        {
+            if (numberDice < 1) { throw new ArgumentException($"{nameof(numberDice)} cannot be less than one.", nameof(numberDice)); }
+            if (diceSides < 2) { throw new ArgumentException($"{nameof(diceSides)} cannot be less than two.", nameof(diceSides)); }
+
+            int diceResult = 0;
+
+            for (int i = 0; i < numberDice; i++)
             {
-                ExceptionLayer.Handle(exc);
-                throw;
+                diceResult += RandomInteger(1, diceSides);
             }
+
+            return diceResult;
         }
         #endregion
 
@@ -1659,8 +1646,10 @@ namespace Pangolin
 
         public static bool LuhnAlgorithm(string idNumber)
         {
+            int numberDigits = 20; // Credit card numberss are about 16 digits, SIM card numbers about 20.
+
             char[] digitChars = idNumber.ToCharArray();
-            List<int> digits = new List<int>();
+            List<int> digits = new List<int>(numberDigits);
 
             for (int i = 0; i < digitChars.Length; i++)
             {
@@ -1681,7 +1670,7 @@ namespace Pangolin
             int counter = 1;
             int sum = 0;
 
-            List<int> checkedAdd = new List<int>();
+            List<int> checkedAdd = new List<int>(numberDigits);
 
             foreach (int singleDigit in digits)
             {
@@ -1825,11 +1814,7 @@ namespace Pangolin
             {
                 return principal * ((periodInterestRate * effectiveInterestRate) / (effectiveInterestRate - decimal.One));
             }
-            catch (DivideByZeroException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (DivideByZeroException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
         #endregion
 
@@ -1849,11 +1834,7 @@ namespace Pangolin
             {
                 return principal * Convert.ToDecimal(Math.Pow((double)(decimal.One + annualInterestRate / timesAnnuallyCompounded), (double)(timesAnnuallyCompounded * years)));
             }
-            catch (OverflowException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                return default;
-            }
+            catch (OverflowException exc) { ExceptionLayer.CoreHandle(exc); return default; }
         }
 
         public static decimal CompoundInterestTotal(decimal principal, decimal annualInterestRate, int timesAnnuallyCompounded, decimal years)

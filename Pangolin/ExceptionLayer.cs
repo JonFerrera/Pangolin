@@ -31,6 +31,13 @@ namespace Pangolin
 
         public static string Handle(Exception exception)
         {
+            string exceptionText = CoreHandle(exception);
+
+            return exceptionText;
+        }
+
+        internal static string CoreHandle(Exception exception)
+        {
             string exceptionText = WriteExceptionText(exception);
             DiagnosticsLayer.EventLogWriteError(exceptionText);
 
@@ -39,14 +46,14 @@ namespace Pangolin
                 Console.WriteLine(exceptionText);
             }
             catch (IOException) { }
-
+            
             return exceptionText;
         }
 
         internal static async Task CoreHandleAsync(Exception exception)
         {
             string
-                exceptionText = Handle(exception),
+                exceptionText = CoreHandle(exception),
                 body = WriteExceptionHtml(exception);
 
             Task
@@ -107,22 +114,13 @@ namespace Pangolin
             int hresult = exception.HResult;
 
             string[] source = null;
-            if (!string.IsNullOrWhiteSpace(exception.Source))
-            {
-                source = exception.Source.Split(ConfigurationLayer.LineSplit, StringSplitOptions.RemoveEmptyEntries).Select(i => i.Trim()).ToArray();
-            }
+            source = exception.Source?.Split(ConfigurationLayer.LineSplit, StringSplitOptions.RemoveEmptyEntries).Select(i => i.Trim()).ToArray();
 
             string[] targetSite = null;
-            if (exception.TargetSite != null)
-            {
-                targetSite = exception.TargetSite.ToString().Split(ConfigurationLayer.LineSplit, StringSplitOptions.RemoveEmptyEntries).Select(i => i.Trim()).ToArray();
-            }
+            targetSite = exception.TargetSite?.ToString().Split(ConfigurationLayer.LineSplit, StringSplitOptions.RemoveEmptyEntries).Select(i => i.Trim()).ToArray();
 
             string[] stackTrace = null;
-            if (!string.IsNullOrWhiteSpace(exception.StackTrace))
-            {
-                stackTrace = exception.StackTrace.Split(ConfigurationLayer.LineSplit, StringSplitOptions.RemoveEmptyEntries).Select(i => i.Trim()).ToArray();
-            }
+            stackTrace = exception.StackTrace?.Split(ConfigurationLayer.LineSplit, StringSplitOptions.RemoveEmptyEntries).Select(i => i.Trim()).ToArray();
 
             IDictionary data = null;
             if (exception.Data?.Count > 0)
@@ -277,7 +275,7 @@ namespace Pangolin
                     foreach (KeyValuePair<string, object> specificDatum in specificData)
                     {
                         exceptionText.AppendLine(_indentation + specificDatum.Key);
-                        string datumValue = specificDatum.Value != null ? specificDatum.Value.ToString() : string.Empty;
+                        string datumValue = specificDatum.Value?.ToString() ?? string.Empty;
                         exceptionText.AppendLine(_indentation + ConfigurationLayer.Tab + datumValue);
                     }
                 }
@@ -416,7 +414,7 @@ namespace Pangolin
                                             htmlTextWriter.WriteFullBeginTag("li");
                                             htmlTextWriter.WriteFullBeginTag("code");
 
-                                            string parameterValue = dbParameter.Value != null ? dbParameter.Value.ToString() : string.Empty;
+                                            string parameterValue = dbParameter.Value?.ToString() ?? string.Empty;
                                             htmlTextWriter.Write($"{dbParameter.ParameterName} - {parameterValue}");
 
                                             htmlTextWriter.WriteEndTag("code");
@@ -462,7 +460,7 @@ namespace Pangolin
                             htmlTextWriter.WriteFullBeginTag("li");
                             htmlTextWriter.WriteFullBeginTag("code");
 
-                            string datumValue = specificDatum.Value != null ? specificDatum.Value.ToString() : string.Empty;
+                            string datumValue = specificDatum.Value?.ToString() ?? string.Empty;
                             htmlTextWriter.Write($"{specificDatum.Key} - {datumValue}");
 
                             htmlTextWriter.WriteEndTag("code");
@@ -665,7 +663,7 @@ namespace Pangolin
                     {
                         xmlWriter.WriteStartElement("specificDatum");
                         xmlWriter.WriteAttributeString("name", specificDatum.Key);
-                        string datumValue = specificDatum.Value != null ? specificDatum.Value.ToString() : string.Empty;
+                        string datumValue = specificDatum.Value?.ToString() ?? string.Empty;
                         xmlWriter.WriteAttributeString("value", datumValue);
                         xmlWriter.WriteEndElement();
                     }

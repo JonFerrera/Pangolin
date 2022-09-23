@@ -138,11 +138,7 @@ namespace Pangolin
                         csvString.Append(i == thisDataTable.Columns.Count - 1 ? Environment.NewLine : delimiter);
                     }
                 }
-                catch (ArgumentOutOfRangeException exc)
-                {
-                    ExceptionLayer.Handle(exc);
-                    throw;
-                }
+                catch (ArgumentOutOfRangeException exc) { ExceptionLayer.CoreHandle(exc); throw; }
             }
 
             try
@@ -156,11 +152,7 @@ namespace Pangolin
                     }
                 }
             }
-            catch (ArgumentOutOfRangeException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (ArgumentOutOfRangeException exc) { ExceptionLayer.CoreHandle(exc); throw; }
 
             return csvString.ToString();
         }
@@ -273,22 +265,10 @@ namespace Pangolin
                 {
                     thisString = ConfigurationLayer.DefaultEncoding.GetString(textBytes);
                 }
-                catch (DecoderFallbackException exc)
-                {
-                    ExceptionLayer.Handle(exc);
-                    throw;
-                }
-                catch (ArgumentException exc)
-                {
-                    ExceptionLayer.Handle(exc);
-                    throw;
-                }
+                catch (DecoderFallbackException exc) { ExceptionLayer.CoreHandle(exc); throw; }
+                catch (ArgumentException exc) { ExceptionLayer.CoreHandle(exc); throw; }
             }
-            catch (FormatException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (FormatException exc) { ExceptionLayer.CoreHandle(exc); throw; }
 
             return thisString;
         }
@@ -379,11 +359,7 @@ namespace Pangolin
                     stringBuilder.Append(thisString);
                 }
             }
-            catch (ArgumentOutOfRangeException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (ArgumentOutOfRangeException exc) { ExceptionLayer.CoreHandle(exc); throw; }
 
             return stringBuilder.ToString();
         }
@@ -418,11 +394,7 @@ namespace Pangolin
             {
                 textBytes = Encoding.UTF8.GetBytes(thisString);
             }
-            catch (EncoderFallbackException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (EncoderFallbackException exc) { ExceptionLayer.CoreHandle(exc); throw; }
 
             return Convert.ToBase64String(textBytes);
         }
@@ -493,12 +465,8 @@ namespace Pangolin
                 stringBuilder.Append(thisTimeSpan.Milliseconds.ToString());
                 stringBuilder.Append(thisTimeSpan.Milliseconds == 1 ? " millisecond." : " milliseconds.");
             }
-            catch (ArgumentOutOfRangeException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
-            
+            catch (ArgumentOutOfRangeException exc) { ExceptionLayer.CoreHandle(exc); throw; }
+
             return stringBuilder.ToString();
         }
         #endregion

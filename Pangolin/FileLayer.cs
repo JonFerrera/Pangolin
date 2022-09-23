@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Net;
 using System.Security;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
@@ -154,10 +152,10 @@ namespace Pangolin
             {
                 extractPath = GetFullPath(extractPath);
             }
-            catch (ArgumentException exc) { ExceptionLayer.Handle(exc); throw; }
-            catch (SecurityException exc) { ExceptionLayer.Handle(exc); throw; }
-            catch (NotSupportedException exc) { ExceptionLayer.Handle(exc); throw; }
-            catch (PathTooLongException exc) { ExceptionLayer.Handle(exc); throw; }
+            catch (ArgumentException exc){ ExceptionLayer.CoreHandle(exc); throw; }
+            catch (SecurityException exc){ ExceptionLayer.CoreHandle(exc); throw; }
+            catch (NotSupportedException exc){ ExceptionLayer.CoreHandle(exc); throw; }
+            catch (PathTooLongException exc){ ExceptionLayer.CoreHandle(exc); throw; }
 
             if (!extractPath.EndsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.Ordinal))
             {
@@ -219,7 +217,7 @@ namespace Pangolin
             }
             else
             {
-                throw new InvalidOperationException("path is invalid.");
+                throw new InvalidOperationException($"{nameof(path)}: {path} is invalid.");
             }
 
             return modifiedPath;
@@ -237,7 +235,7 @@ namespace Pangolin
             }
             else
             {
-                throw new InvalidOperationException("path is invalid.");
+                throw new InvalidOperationException($"{nameof(path)}: {path} is invalid.");
             }
 
             return directoryName;
@@ -255,7 +253,7 @@ namespace Pangolin
             }
             else
             {
-                throw new InvalidOperationException("path is invalid.");
+                throw new InvalidOperationException($"{nameof(path)}: {path} is invalid.");
             }
 
             return extension;
@@ -273,7 +271,7 @@ namespace Pangolin
             }
             else
             {
-                throw new InvalidOperationException($"{nameof(path)} is invalid.");
+                throw new InvalidOperationException($"{nameof(path)}: {path} is invalid.");
             }
 
             return fileName;
@@ -291,7 +289,7 @@ namespace Pangolin
             }
             else
             {
-                throw new InvalidOperationException("path is invalid.");
+                throw new InvalidOperationException($"{nameof(path)}: {path} is invalid.");
             }
 
             return fileNameWithoutExtension;
@@ -307,10 +305,10 @@ namespace Pangolin
                 {
                     files = Directory.GetFiles(path, "*", SearchOption.AllDirectories);
                 }
-                catch (PathTooLongException exc) { ExceptionLayer.Handle(exc); throw; }
-                catch (DirectoryNotFoundException exc) { ExceptionLayer.Handle(exc); throw; }
-                catch (IOException exc) { ExceptionLayer.Handle(exc); throw; }
-                catch (UnauthorizedAccessException exc) { ExceptionLayer.Handle(exc); throw; }
+                catch (PathTooLongException exc){ ExceptionLayer.CoreHandle(exc); throw; }
+                catch (DirectoryNotFoundException exc){ ExceptionLayer.CoreHandle(exc); throw; }
+                catch (IOException exc){ ExceptionLayer.CoreHandle(exc); throw; }
+                catch (UnauthorizedAccessException exc){ ExceptionLayer.CoreHandle(exc); throw; }
             }
             else
             {
@@ -332,13 +330,13 @@ namespace Pangolin
                 {
                     fullPath = Path.GetFullPath(path);
                 }
-                catch (ArgumentException exc) { ExceptionLayer.Handle(exc); throw; }
-                catch (NotSupportedException exc) { ExceptionLayer.Handle(exc); throw; }
-                catch (SecurityException exc) { ExceptionLayer.Handle(exc); throw; }
+                catch (ArgumentException exc){ ExceptionLayer.CoreHandle(exc); throw; }
+                catch (NotSupportedException exc){ ExceptionLayer.CoreHandle(exc); throw; }
+                catch (SecurityException exc){ ExceptionLayer.CoreHandle(exc); throw; }
             }
             else
             {
-                throw new InvalidOperationException($"{nameof(path)} is invalid.");
+                throw new InvalidOperationException($"{nameof(path)}: {path} is invalid.");
             }
 
             return fullPath;
@@ -354,12 +352,12 @@ namespace Pangolin
 
                 return fileAttributes.HasFlag(FileAttributes.Directory);
             }
-            catch (PathTooLongException exc) { ExceptionLayer.Handle(exc); throw; }
-            catch (NotSupportedException exc) { ExceptionLayer.Handle(exc); throw; }
-            catch (FileNotFoundException exc) { ExceptionLayer.Handle(exc); throw; }
-            catch (DirectoryNotFoundException exc) { ExceptionLayer.Handle(exc); throw; }
-            catch (IOException exc) { ExceptionLayer.Handle(exc); throw; }
-            catch (UnauthorizedAccessException exc) { ExceptionLayer.Handle(exc); throw; }
+            catch (PathTooLongException exc){ ExceptionLayer.CoreHandle(exc); throw; }
+            catch (NotSupportedException exc){ ExceptionLayer.CoreHandle(exc); throw; }
+            catch (FileNotFoundException exc){ ExceptionLayer.CoreHandle(exc); throw; }
+            catch (DirectoryNotFoundException exc){ ExceptionLayer.CoreHandle(exc); throw; }
+            catch (IOException exc){ ExceptionLayer.CoreHandle(exc); throw; }
+            catch (UnauthorizedAccessException exc){ ExceptionLayer.CoreHandle(exc); throw; }
         }
 
         public static bool IsValidPath(string path)
@@ -381,7 +379,7 @@ namespace Pangolin
                     directoryPath = Path.GetDirectoryName(path);
                     fileName = Path.GetFileName(path);
                 }
-                catch (ArgumentException exc) { ExceptionLayer.Handle(exc); throw; }
+                catch (ArgumentException exc){ ExceptionLayer.CoreHandle(exc); throw; }
 
                 isValidDirectoryPath = directoryPath.IndexOfAny(_invalidPathChars) == _nullIndex;
                 isValidFileName = fileName.IndexOfAny(_invalidFileNameChars) == _nullIndex;
@@ -451,9 +449,9 @@ namespace Pangolin
                         xmlDocument.Load(xmlReader);
                     }
                 }
-                catch (XmlException exc) { ExceptionLayer.Handle(exc); }
-                catch (UriFormatException exc) { ExceptionLayer.Handle(exc); }
-                catch (FileNotFoundException exc) { ExceptionLayer.Handle(exc); }
+                catch (XmlException exc){ ExceptionLayer.CoreHandle(exc); }
+                catch (UriFormatException exc){ ExceptionLayer.CoreHandle(exc); }
+                catch (FileNotFoundException exc){ ExceptionLayer.CoreHandle(exc); }
             }
 
             return xmlDocument;
@@ -502,10 +500,10 @@ namespace Pangolin
                 File.Copy(fullSourceFileName, fullDestinationFileName, overwrite);
                 isCopied = true;
             }
-            catch (DirectoryNotFoundException exc) { ExceptionLayer.Handle(exc); throw; }
-            catch (IOException exc) { ExceptionLayer.Handle(exc); throw; }
-            catch (UnauthorizedAccessException exc) { ExceptionLayer.Handle(exc); throw; }
-            catch (NotSupportedException exc) { ExceptionLayer.Handle(exc); throw; }
+            catch (DirectoryNotFoundException exc){ ExceptionLayer.CoreHandle(exc); throw; }
+            catch (IOException exc){ ExceptionLayer.CoreHandle(exc); throw; }
+            catch (UnauthorizedAccessException exc){ ExceptionLayer.CoreHandle(exc); throw; }
+            catch (NotSupportedException exc){ ExceptionLayer.CoreHandle(exc); throw; }
 
             return isCopied;
         }
@@ -548,9 +546,9 @@ namespace Pangolin
                 File.Delete(fullFileName);
                 isDeleted = true;
             }
-            catch (IOException exc) { ExceptionLayer.Handle(exc); throw; }
-            catch (NotSupportedException exc) { ExceptionLayer.Handle(exc); throw; }
-            catch (UnauthorizedAccessException exc) { ExceptionLayer.Handle(exc); throw; }
+            catch (IOException exc){ ExceptionLayer.CoreHandle(exc); throw; }
+            catch (NotSupportedException exc){ ExceptionLayer.CoreHandle(exc); throw; }
+            catch (UnauthorizedAccessException exc){ ExceptionLayer.CoreHandle(exc); throw; }
 
             return isDeleted;
         }
@@ -593,10 +591,10 @@ namespace Pangolin
                 File.Move(fullSourceFileName, fullDestinationFileName);
                 isMoved = true;
             }
-            catch (DirectoryNotFoundException exc) { ExceptionLayer.Handle(exc); throw; }
-            catch (IOException exc) { ExceptionLayer.Handle(exc); throw; }
-            catch (UnauthorizedAccessException exc) { ExceptionLayer.Handle(exc); throw; }
-            catch (NotSupportedException exc) { ExceptionLayer.Handle(exc); throw; }
+            catch (DirectoryNotFoundException exc){ ExceptionLayer.CoreHandle(exc); throw; }
+            catch (IOException exc){ ExceptionLayer.CoreHandle(exc); throw; }
+            catch (UnauthorizedAccessException exc){ ExceptionLayer.CoreHandle(exc); throw; }
+            catch (NotSupportedException exc){ ExceptionLayer.CoreHandle(exc); throw; }
 
             return isMoved;
         }
@@ -713,7 +711,7 @@ namespace Pangolin
 
             if (string.IsNullOrWhiteSpace(fullFileName))
             {
-                throw new InvalidOperationException("fileName resulted in an invalid file path.");
+                throw new InvalidOperationException($"{nameof(fileName)} resulted in an invalid file path.");
             }
 
             bool isWritten = false;
@@ -786,9 +784,9 @@ namespace Pangolin
                     Directory.CreateDirectory(path);
                     isCreated = true;
                 }
-                catch (IOException exc) { ExceptionLayer.Handle(exc); throw; } /* The directory specified by path is a file or the network name is not known. */
-                catch (UnauthorizedAccessException exc) { ExceptionLayer.Handle(exc); throw; } /* The caller does not have the required permission. */
-                catch (NotSupportedException exc) { ExceptionLayer.Handle(exc); throw; } /* Path contains a colon character (:) that is not part of a drive label. */
+                catch (IOException exc){ ExceptionLayer.CoreHandle(exc); throw; } /* The directory specified by path is a file or the network name is not known. */
+                catch (UnauthorizedAccessException exc){ ExceptionLayer.CoreHandle(exc); throw; } /* The caller does not have the required permission. */
+                catch (NotSupportedException exc){ ExceptionLayer.CoreHandle(exc); throw; } /* Path contains a colon character (:) that is not part of a drive label. */
             }
 
             return isCreated;

@@ -5,6 +5,8 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace Pangolin
 {
@@ -70,15 +72,15 @@ namespace Pangolin
                             checkSum = Encoding.Default.GetString(md5.ComputeHash(fileStream));
                         }
                     }
-                    catch (DecoderFallbackException exc) { ExceptionLayer.Handle(exc); throw; }
-                    catch (TargetInvocationException exc) { ExceptionLayer.Handle(exc); throw; }
+                    catch (DecoderFallbackException exc) { ExceptionLayer.CoreHandle(exc); throw; }
+                    catch (TargetInvocationException exc) { ExceptionLayer.CoreHandle(exc); throw; }
                 }
             }
-            catch (PathTooLongException exc) { ExceptionLayer.Handle(exc); throw; }
-            catch (DirectoryNotFoundException exc) { ExceptionLayer.Handle(exc); throw; }
-            catch (UnauthorizedAccessException exc) { ExceptionLayer.Handle(exc); throw; }
-            catch (NotSupportedException exc) { ExceptionLayer.Handle(exc); throw; }
-            catch (IOException exc) { ExceptionLayer.Handle(exc); throw; }
+            catch (PathTooLongException exc) { ExceptionLayer.CoreHandle(exc); throw; }
+            catch (DirectoryNotFoundException exc) { ExceptionLayer.CoreHandle(exc); throw; }
+            catch (UnauthorizedAccessException exc) { ExceptionLayer.CoreHandle(exc); throw; }
+            catch (NotSupportedException exc) { ExceptionLayer.CoreHandle(exc); throw; }
+            catch (IOException exc) { ExceptionLayer.CoreHandle(exc); throw; }
 
             return checkSum;
         }
@@ -101,15 +103,15 @@ namespace Pangolin
                             checkSum = Encoding.Default.GetString(sha1.ComputeHash(fileStream));
                         }
                     }
-                    catch (DecoderFallbackException exc) { ExceptionLayer.Handle(exc); throw; }
-                    catch (TargetInvocationException exc) { ExceptionLayer.Handle(exc); throw; }
+                    catch (DecoderFallbackException exc) { ExceptionLayer.CoreHandle(exc); throw; }
+                    catch (TargetInvocationException exc) { ExceptionLayer.CoreHandle(exc); throw; }
                 }
             }
-            catch (PathTooLongException exc) { ExceptionLayer.Handle(exc); throw; }
-            catch (DirectoryNotFoundException exc) { ExceptionLayer.Handle(exc); throw; }
-            catch (UnauthorizedAccessException exc) { ExceptionLayer.Handle(exc); throw; }
-            catch (NotSupportedException exc) { ExceptionLayer.Handle(exc); throw; }
-            catch (IOException exc) { ExceptionLayer.Handle(exc); throw; }
+            catch (PathTooLongException exc) { ExceptionLayer.CoreHandle(exc); throw; }
+            catch (DirectoryNotFoundException exc) { ExceptionLayer.CoreHandle(exc); throw; }
+            catch (UnauthorizedAccessException exc) { ExceptionLayer.CoreHandle(exc); throw; }
+            catch (NotSupportedException exc) { ExceptionLayer.CoreHandle(exc); throw; }
+            catch (IOException exc) { ExceptionLayer.CoreHandle(exc); throw; }
 
             return checkSum;
         }
@@ -132,15 +134,15 @@ namespace Pangolin
                             checkSum = Encoding.Default.GetString(sha256.ComputeHash(fileStream));
                         }
                     }
-                    catch (DecoderFallbackException exc) { ExceptionLayer.Handle(exc); throw; }
-                    catch (TargetInvocationException exc) { ExceptionLayer.Handle(exc); throw; }
+                    catch (DecoderFallbackException exc) { ExceptionLayer.CoreHandle(exc); throw; }
+                    catch (TargetInvocationException exc) { ExceptionLayer.CoreHandle(exc); throw; }
                 }
             }
-            catch (PathTooLongException exc) { ExceptionLayer.Handle(exc); throw; }
-            catch (DirectoryNotFoundException exc) { ExceptionLayer.Handle(exc); throw; }
-            catch (UnauthorizedAccessException exc) { ExceptionLayer.Handle(exc); throw; }
-            catch (NotSupportedException exc) { ExceptionLayer.Handle(exc); throw; }
-            catch (IOException exc) { ExceptionLayer.Handle(exc); throw; }
+            catch (PathTooLongException exc) { ExceptionLayer.CoreHandle(exc); throw; }
+            catch (DirectoryNotFoundException exc) { ExceptionLayer.CoreHandle(exc); throw; }
+            catch (UnauthorizedAccessException exc) { ExceptionLayer.CoreHandle(exc); throw; }
+            catch (NotSupportedException exc) { ExceptionLayer.CoreHandle(exc); throw; }
+            catch (IOException exc) { ExceptionLayer.CoreHandle(exc); throw; }
 
             return checkSum;
         }
@@ -417,34 +419,91 @@ namespace Pangolin
         #endregion
 
         #region Encryption - Asymmetric
-        private static RSAParameters GenerateKey(bool includePrivateParameters)
+        public static string RSADecrypt(string encryptedText, string privateKeyXml)
         {
+            if (encryptedText == null) { throw new ArgumentNullException(nameof(encryptedText)); }
+            if (privateKeyXml == null) { throw new ArgumentNullException(nameof(privateKeyXml)); }
+
+            string plainText = string.Empty;
+            byte[]
+                encryptedBytes = null,
+                plainBytes = null;
+            
+            try
+            {
+                encryptedBytes = Convert.FromBase64String(encryptedText);
+            }
+            catch (FormatException exc) { ExceptionLayer.CoreHandle(exc); throw; }
+
             try
             {
                 using (RSACryptoServiceProvider rsaCsp = new RSACryptoServiceProvider(_rsaKeySize))
                 {
-                    return rsaCsp.ExportParameters(includePrivateParameters);
+                    rsaCsp.FromXmlString(privateKeyXml);
+
+                    plainBytes = rsaCsp.Decrypt(encryptedBytes, false);
                 }
             }
-            catch (CryptographicException exc) { ExceptionLayer.Handle(exc); throw; }
+            catch (CryptographicException exc) { ExceptionLayer.CoreHandle(exc); throw; }
+            
+            try
+            {
+                plainText = Encoding.UTF8.GetString(plainBytes);
+            }
+            catch (DecoderFallbackException exc) { ExceptionLayer.CoreHandle(exc); throw; }
+
+            return plainText;
         }
 
-        private static string GenerateKeyXml()
+        public static string RSAEncrypt(string plainText, string publicKeyXml)
         {
+            if (plainText == null) { throw new ArgumentNullException(nameof(plainText)); }
+            if (publicKeyXml == null) { throw new ArgumentNullException(nameof(publicKeyXml)); }
+
+            string encryptedText = string.Empty;
+            byte[]
+                plainBytes = null,
+                encryptedBytes = null;
+
+            try
+            {
+                plainBytes = Encoding.UTF8.GetBytes(plainText);
+            }
+            catch (EncoderFallbackException exc) { ExceptionLayer.CoreHandle(exc); throw; }
+
             try
             {
                 using (RSACryptoServiceProvider rsaCsp = new RSACryptoServiceProvider(_rsaKeySize))
                 {
-                    rsaCsp.ExportParameters(false);
-                    return rsaCsp.ToXmlString(true);
+                    rsaCsp.FromXmlString(publicKeyXml);
+
+                    encryptedBytes = rsaCsp.Encrypt(plainBytes, false);
                 }
             }
-            catch (CryptographicException exc) { ExceptionLayer.Handle(exc); throw; }
+            catch (CryptographicException exc) { ExceptionLayer.CoreHandle(exc); throw; }
+
+            encryptedText = Convert.ToBase64String(encryptedBytes);
+
+            return encryptedText;
         }
 
-        public static string Decrypt(string rsaParametersXml, byte[] encryptedBytes)
+        public static (string, string) RSAKeys()
         {
-            throw new NotImplementedException();
+            string
+                privateKeyXml = string.Empty,
+                publicKeyXml = string.Empty;
+
+            try
+            {
+                using (RSACryptoServiceProvider rsaCsp = new RSACryptoServiceProvider(_rsaKeySize))
+                {
+                    privateKeyXml = rsaCsp.ToXmlString(true);
+                    publicKeyXml = rsaCsp.ToXmlString(false);
+                }
+            }
+            catch (CryptographicException exc) { ExceptionLayer.CoreHandle(exc); throw; }
+
+            return (privateKeyXml, publicKeyXml);
         }
         #endregion
 
@@ -681,11 +740,7 @@ namespace Pangolin
                     hash = Convert.ToBase64String(authenticatedBytes);
                 }
             }
-            catch (EncoderFallbackException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (EncoderFallbackException exc) { ExceptionLayer.CoreHandle(exc); throw; }
 
             return hash;
         }
@@ -703,11 +758,7 @@ namespace Pangolin
                 hash = Authenticate(plainText, macKeyBytes);
 
             }
-            catch (EncoderFallbackException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (EncoderFallbackException exc) { ExceptionLayer.CoreHandle(exc); throw; }
 
             return hash;
         }

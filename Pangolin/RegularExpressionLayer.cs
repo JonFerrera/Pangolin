@@ -59,7 +59,7 @@ namespace Pangolin
 
         private static bool GetIsMatch(Match match)
         {
-            return match != null ? match.Success : false;
+            return match?.Success ?? false;
         }
         private static string GetMatch(Match match)
         {
@@ -84,10 +84,7 @@ namespace Pangolin
 
                 matchList.TrimExcess();
             }
-            catch (RegexMatchTimeoutException exc)
-            {
-                ExceptionLayer.Handle(exc);
-            }
+            catch (RegexMatchTimeoutException exc) { ExceptionLayer.CoreHandle(exc); }
 
             return matchList.ToArray();
         }
@@ -116,11 +113,7 @@ namespace Pangolin
             {
                 return _betweenAngleBrackets.Match(input);
             }
-            catch (RegexMatchTimeoutException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (RegexMatchTimeoutException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
 
         public static string GetCurlyBracesText(string input)
@@ -146,11 +139,7 @@ namespace Pangolin
             {
                 return _betweenCurlyBraces.Match(input);
             }
-            catch (RegexMatchTimeoutException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (RegexMatchTimeoutException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
 
         public static string GetParenthesesText(string input)
@@ -176,11 +165,7 @@ namespace Pangolin
             {
                 return _betweenParentheses.Match(input);
             }
-            catch (RegexMatchTimeoutException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (RegexMatchTimeoutException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
 
         public static string GetQuotationsText(string input)
@@ -206,11 +191,7 @@ namespace Pangolin
             {
                 return _betweenQuotations.Match(input);
             }
-            catch (RegexMatchTimeoutException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (RegexMatchTimeoutException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
 
         public static string GetDoubleQuotationsText(string input)
@@ -236,11 +217,7 @@ namespace Pangolin
             {
                 return _betweenQuotationsDouble.Match(input);
             }
-            catch (RegexMatchTimeoutException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (RegexMatchTimeoutException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
 
         public static string GetSingleQuotationsText(string input)
@@ -266,11 +243,7 @@ namespace Pangolin
             {
                 return _betweenQuotationsSingle.Match(input);
             }
-            catch (RegexMatchTimeoutException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (RegexMatchTimeoutException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
         #endregion
 
@@ -289,11 +262,7 @@ namespace Pangolin
             {
                 return _cardSecurityCode.Replace(input, matchEvaluator);
             }
-            catch (RegexMatchTimeoutException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (RegexMatchTimeoutException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
         private static Match GetCardSecurityCodeMatch(string input)
         {
@@ -303,11 +272,7 @@ namespace Pangolin
             {
                 return _cardSecurityCode.Match(input);
             }
-            catch (RegexMatchTimeoutException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (RegexMatchTimeoutException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
 
         public static bool IsCreditCardNumberMatch(string input)
@@ -324,11 +289,7 @@ namespace Pangolin
             {
                 return _creditCardNumber.Replace(input, matchEvaluator);
             }
-            catch (RegexMatchTimeoutException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (RegexMatchTimeoutException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
         private static Match GetCreditCardNumberMatch(string input)
         {
@@ -338,11 +299,7 @@ namespace Pangolin
             {
                 return _creditCardNumber.Match(input);
             }
-            catch (RegexMatchTimeoutException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (RegexMatchTimeoutException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
 
         public static bool IsCreditCardNumberAmericanExpressMatch(string input)
@@ -359,11 +316,7 @@ namespace Pangolin
             {
                 return _creditCardNumberAmericanExpress.Replace(input, matchEvaluator);
             }
-            catch (RegexMatchTimeoutException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (RegexMatchTimeoutException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
         private static Match GetCreditCardNumberAmericanExpressMatch(string input)
         {
@@ -373,11 +326,7 @@ namespace Pangolin
             {
                 return _creditCardNumberAmericanExpress.Match(input);
             }
-            catch (RegexMatchTimeoutException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (RegexMatchTimeoutException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
 
         public static bool IsCreditCardNumberDinersClubMatch(string input)
@@ -394,11 +343,7 @@ namespace Pangolin
             {
                 return _creditCardNumberDinersClub.Replace(input, matchEvaluator);
             }
-            catch (RegexMatchTimeoutException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (RegexMatchTimeoutException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
         private static Match GetCreditCardNumberDinersClubMatch(string input)
         {
@@ -408,11 +353,7 @@ namespace Pangolin
             {
                 return _creditCardNumberDinersClub.Match(input);
             }
-            catch (RegexMatchTimeoutException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (RegexMatchTimeoutException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
 
         public static bool IsCreditCardNumberDiscoverMatch(string input)
@@ -429,11 +370,7 @@ namespace Pangolin
             {
                 return _creditCardNumberDiscover.Replace(input, matchEvaluator);
             }
-            catch (RegexMatchTimeoutException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (RegexMatchTimeoutException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
         private static Match GetCreditCardNumberDiscoverMatch(string input)
         {
@@ -443,11 +380,7 @@ namespace Pangolin
             {
                 return _creditCardNumberDiscover.Match(input);
             }
-            catch (RegexMatchTimeoutException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (RegexMatchTimeoutException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
 
         public static bool IsCreditCardNumberMasterCardMatch(string input)
@@ -464,11 +397,7 @@ namespace Pangolin
             {
                 return _creditCardNumberMasterCard.Replace(input, matchEvaluator);
             }
-            catch (RegexMatchTimeoutException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (RegexMatchTimeoutException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
         private static Match GetCreditCardNumberMasterCardMatch(string input)
         {
@@ -478,11 +407,7 @@ namespace Pangolin
             {
                 return _creditCardNumberMasterCard.Match(input);
             }
-            catch (RegexMatchTimeoutException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (RegexMatchTimeoutException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
 
         public static bool IsCreditCardNumberJCBMatch(string input)
@@ -499,11 +424,7 @@ namespace Pangolin
             {
                 return _creditCardNumberJCB.Replace(input, matchEvaluator);
             }
-            catch (RegexMatchTimeoutException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (RegexMatchTimeoutException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
         private static Match GetCreditCardNumberJCBMatch(string input)
         {
@@ -513,11 +434,7 @@ namespace Pangolin
             {
                 return _creditCardNumberJCB.Match(input);
             }
-            catch (RegexMatchTimeoutException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (RegexMatchTimeoutException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
 
         public static bool IsCreditCardNumberVisaMatch(string input)
@@ -534,11 +451,7 @@ namespace Pangolin
             {
                 return _creditCardNumberVisa.Replace(input, matchEvaluator);
             }
-            catch (RegexMatchTimeoutException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (RegexMatchTimeoutException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
         private static Match GetCreditCardNumberVisaMatch(string input)
         {
@@ -548,11 +461,7 @@ namespace Pangolin
             {
                 return _creditCardNumberVisa.Match(input);
             }
-            catch (RegexMatchTimeoutException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (RegexMatchTimeoutException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
 
         private static string CreditCardMatchEvaluator(Match match)
@@ -576,11 +485,7 @@ namespace Pangolin
             {
                 return _email.Match(input);
             }
-            catch (RegexMatchTimeoutException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (RegexMatchTimeoutException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
 
         public static bool IsEmailHtml5Match(string input)
@@ -596,11 +501,7 @@ namespace Pangolin
             {
                 return _emailHtml5.Match(input);
             }
-            catch (RegexMatchTimeoutException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (RegexMatchTimeoutException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
 
         public static bool IsEmailRFC5322Match(string input)
@@ -616,11 +517,7 @@ namespace Pangolin
             {
                 return _emailRFC5322.Match(input);
             }
-            catch (RegexMatchTimeoutException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (RegexMatchTimeoutException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
         #endregion
 
@@ -638,11 +535,7 @@ namespace Pangolin
             {
                 return _hexColor.Match(input);
             }
-            catch (RegexMatchTimeoutException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (RegexMatchTimeoutException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
 
         public static bool IsHtmlTagMatch(string input)
@@ -658,11 +551,7 @@ namespace Pangolin
             {
                 return _htmlTag.Match(input);
             }
-            catch (RegexMatchTimeoutException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (RegexMatchTimeoutException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
 
         public static bool IsIpV4Match(string input)
@@ -678,11 +567,7 @@ namespace Pangolin
             {
                 return _ipv4.Match(input);
             }
-            catch (RegexMatchTimeoutException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (RegexMatchTimeoutException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
 
         public static bool IsIpV6Match(string input)
@@ -698,11 +583,7 @@ namespace Pangolin
             {
                 return _ipv6.Match(input);
             }
-            catch (RegexMatchTimeoutException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (RegexMatchTimeoutException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
 
         public static bool IsSlugMatch(string input)
@@ -718,11 +599,7 @@ namespace Pangolin
             {
                 return _slug.Match(input);
             }
-            catch (RegexMatchTimeoutException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (RegexMatchTimeoutException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
 
         public static bool IsUsernameMatch(string input)
@@ -738,11 +615,7 @@ namespace Pangolin
             {
                 return _username.Match(input);
             }
-            catch (RegexMatchTimeoutException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (RegexMatchTimeoutException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
         #endregion
 
@@ -760,11 +633,7 @@ namespace Pangolin
             {
                 return _phoneNumber.Match(input);
             }
-            catch (RegexMatchTimeoutException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (RegexMatchTimeoutException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
 
         public static bool IsSocialSecurityNumberMatch(string input)
@@ -780,11 +649,7 @@ namespace Pangolin
             {
                 return _socialSecurityNumber.Match(input);
             }
-            catch (RegexMatchTimeoutException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (RegexMatchTimeoutException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
 
         public static bool IsStatesUSMatch(string input)
@@ -800,11 +665,7 @@ namespace Pangolin
             {
                 return _statesUs.Match(input);
             }
-            catch (RegexMatchTimeoutException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (RegexMatchTimeoutException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
 
         public static bool IsZipCodeUSMatch(string input)
@@ -820,11 +681,7 @@ namespace Pangolin
             {
                 return _zipCodeUs.Match(input);
             }
-            catch (RegexMatchTimeoutException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (RegexMatchTimeoutException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
         #endregion
 
@@ -852,11 +709,7 @@ namespace Pangolin
             {
                 return _hashtag.Match(input);
             }
-            catch (RegexMatchTimeoutException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (RegexMatchTimeoutException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
 
         public static string GetHashtagStockTicker(string input)
@@ -882,11 +735,7 @@ namespace Pangolin
             {
                 return _hashtagStockTicker.Match(input);
             }
-            catch (RegexMatchTimeoutException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (RegexMatchTimeoutException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
 
         public static string GetUsernameSocial(string input)
@@ -912,11 +761,7 @@ namespace Pangolin
             {
                 return _usernameSocial.Match(input);
             }
-            catch (RegexMatchTimeoutException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (RegexMatchTimeoutException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
         #endregion
 
@@ -959,11 +804,7 @@ namespace Pangolin
             {
                 return _whitespace.Replace(input, matchEvaluator);
             }
-            catch (RegexMatchTimeoutException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (RegexMatchTimeoutException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
         #endregion
     }

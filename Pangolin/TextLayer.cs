@@ -207,7 +207,7 @@ namespace Pangolin
             {
                 numberText = number.ToString(format);
             }
-            catch (FormatException exc) { ExceptionLayer.Handle(exc); throw; }
+            catch (FormatException exc) { ExceptionLayer.CoreHandle(exc); throw; }
 
             if (numberText.Length > totalWidth)
             {
@@ -250,7 +250,7 @@ namespace Pangolin
             {
                 numberText = number.ToString(format);
             }
-            catch (FormatException exc) { ExceptionLayer.Handle(exc); throw; }
+            catch (FormatException exc) { ExceptionLayer.CoreHandle(exc); throw; }
 
             if (numberText.Length > totalWidth)
             {
@@ -293,7 +293,7 @@ namespace Pangolin
             {
                 numberText = number.ToString(format);
             }
-            catch (FormatException exc) { ExceptionLayer.Handle(exc); throw; }
+            catch (FormatException exc){ ExceptionLayer.CoreHandle(exc); throw; }
 
             if (numberText.Length > totalWidth)
             {
@@ -336,7 +336,7 @@ namespace Pangolin
             {
                 numberText = number.ToString(format);
             }
-            catch (FormatException exc) { ExceptionLayer.Handle(exc); throw; }
+            catch (FormatException exc){ ExceptionLayer.CoreHandle(exc); throw; }
 
             if (numberText.Length > totalWidth)
             {
@@ -461,6 +461,13 @@ namespace Pangolin
                 {
                     htmlTextWriter.WriteBeginTag("table");
 
+                    if (!string.IsNullOrWhiteSpace(dataTable.TableName))
+                    {
+                        htmlTextWriter.WriteBeginTag("caption");
+                        htmlTextWriter.Write(dataTable.TableName);
+                        htmlTextWriter.WriteBeginTag("caption");
+                    }
+
                     htmlTextWriter.WriteBeginTag("tr");
                     for (int c = 0; c < dataTable.Columns.Count; c++)
                     {
@@ -510,7 +517,7 @@ namespace Pangolin
                     stringBuilder.Append(HtmlWriteTable(dataSet.Tables[t]));
                 }
             }
-            catch (ArgumentOutOfRangeException exc) { ExceptionLayer.Handle(exc); throw; }
+            catch (ArgumentOutOfRangeException exc){ ExceptionLayer.CoreHandle(exc); throw; }
             
             return stringBuilder.ToString();
 

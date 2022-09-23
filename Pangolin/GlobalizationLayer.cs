@@ -68,35 +68,36 @@ namespace Pangolin
 
         public static DayOfWeek DoomsdayAlgorithm(DateTime givenDate)
         {
-            string yearString = givenDate.Year.ToString();
-            if (!string.IsNullOrWhiteSpace(yearString) && yearString.Length == 4)
-            {
-                string yearFirstTwoDigits = yearString.Substring(0, 2);
-                string yearLastTwoDigits = yearString.Substring(2, 2);
+            int x = givenDate.Year % 400;
 
-                switch (yearFirstTwoDigits)
-                {
-                    case "18":
-                        return DoomsdayAlgorithm(yearLastTwoDigits, DayOfWeek.Friday);
-                    case "19":
-                        return DoomsdayAlgorithm(yearLastTwoDigits, DayOfWeek.Wednesday);
-                    case "20":
-                        return DoomsdayAlgorithm(yearLastTwoDigits, DayOfWeek.Tuesday);
-                    case "21":
-                        return DoomsdayAlgorithm(yearLastTwoDigits, DayOfWeek.Sunday);
-                    default:
-                        break;
-                }
+            DayOfWeek anchorDay = DayOfWeek.Tuesday;
+
+            if (x >= 0 && x < 100)
+            {
+                anchorDay = DayOfWeek.Tuesday;
+            }
+            else if (x >= 100 && x < 200)
+            {
+                anchorDay = DayOfWeek.Sunday;
+            }
+            else if (x >= 200 && x < 300)
+            {
+                anchorDay = DayOfWeek.Friday;
+            }
+            else
+            {
+                anchorDay = DayOfWeek.Wednesday;
             }
 
-            throw new NotImplementedException();
+            int yearLastTwoDigits = givenDate.Year % 100;
+
+            return DoomsdayAlgorithm(yearLastTwoDigits, anchorDay);
         }
 
-        private static DayOfWeek DoomsdayAlgorithm(string yearLastTwoDigits, DayOfWeek anchorDay)
+        private static DayOfWeek DoomsdayAlgorithm(int yearLastTwoDigits, DayOfWeek anchorDay)
         {
-            int y = int.TryParse(yearLastTwoDigits, out y) ? y : default;
-            int a = y / 12;
-            int b = y % 12;
+            int a = yearLastTwoDigits / 12;
+            int b = yearLastTwoDigits % 12;
             int c = b / 4;
             int d = ((a + b + c) % 7) + (int)anchorDay;
             return (DayOfWeek)d;

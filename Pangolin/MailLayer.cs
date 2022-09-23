@@ -1,9 +1,6 @@
 ﻿using System;
-using System.IO;
-using System.Net;
 using System.Net.Mail;
 using System.Net.Mime;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Pangolin
@@ -141,7 +138,7 @@ namespace Pangolin
 
         public static async Task<bool> SendCoreMailAsync(string subject, string body, string[] attachmentFiles = null)
         {
-            if (string.IsNullOrWhiteSpace(ConfigurationLayer.DeveloperMailFrom) || (ConfigurationLayer.DeveloperMailTo != null && ConfigurationLayer.DeveloperMailTo.Length > 0))
+            if (string.IsNullOrWhiteSpace(ConfigurationLayer.DeveloperMailFrom) || ConfigurationLayer.DeveloperMailTo?.Length > 0)
             {
                 throw new InvalidOperationException("Developer Mail Configuration settings missing");
             }

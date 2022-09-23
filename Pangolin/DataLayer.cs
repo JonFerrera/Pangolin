@@ -17,12 +17,12 @@ namespace Pangolin
         #region GUID
         public static string GetGUID()
         {
-            return new Guid().ToString();
+            return Guid.NewGuid().ToString();
         }
 
         public static byte[] GetGuidBytes()
         {
-            return new Guid().ToByteArray();
+            return Guid.NewGuid().ToByteArray();
         }
         #endregion
 
@@ -137,17 +137,17 @@ namespace Pangolin
             if (!await IsOdbcConnectionStringAsync(connectionString)) { throw new ArgumentException($"{nameof(connectionString)} is not a valid Odbc connection string.", nameof(connectionString)); }
             if (query == null) { throw new ArgumentNullException(nameof(query)); }
 
+            CommandType commandType = await DetermineCommandTypeAsync(query);
+
             using (DataTable dataTable = new DataTable())
             using (OdbcConnection odbcConnection = new OdbcConnection(connectionString))
             {
-                await odbcConnection.OpenAsync(cancellationToken);
-
-                CommandType commandType = await DetermineCommandTypeAsync(query);
-
                 dataTable.TableName = commandType == CommandType.StoredProcedure ? query : string.Empty;
 
                 try
                 {
+                    await odbcConnection.OpenAsync(cancellationToken);
+
                     using (OdbcTransaction odbcTransaction = odbcConnection.BeginTransaction())
                     using (OdbcCommand odbcCommand = new OdbcCommand(query, odbcConnection, odbcTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
@@ -182,17 +182,17 @@ namespace Pangolin
             if (odbcParameters == null) { throw new ArgumentNullException(nameof(odbcParameters)); }
             else if (odbcParameters.Length < 1) { throw new ArgumentException($"{nameof(odbcParameters)} contains no parameters.", nameof(odbcParameters)); }
 
+            CommandType commandType = await DetermineCommandTypeAsync(query);
+
             using (DataTable dataTable = new DataTable())
             using (OdbcConnection odbcConnection = new OdbcConnection(connectionString))
             {
-                await odbcConnection.OpenAsync(cancellationToken);
-
-                CommandType commandType = await DetermineCommandTypeAsync(query);
-
                 dataTable.TableName = commandType == CommandType.StoredProcedure ? query : string.Empty;
 
                 try
                 {
+                    await odbcConnection.OpenAsync(cancellationToken);
+
                     using (OdbcTransaction odbcTransaction = odbcConnection.BeginTransaction())
                     using (OdbcCommand odbcCommand = new OdbcCommand(query, odbcConnection, odbcTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
@@ -231,10 +231,10 @@ namespace Pangolin
             using (DataSet dataSet = new DataSet())
             using (OdbcConnection odbcConnection = new OdbcConnection(connectionString))
             {
-                await odbcConnection.OpenAsync(cancellationToken);
-
                 try
                 {
+                    await odbcConnection.OpenAsync(cancellationToken);
+
                     using (OdbcTransaction odbcTransaction = odbcConnection.BeginTransaction())
                     using (OdbcCommand odbcCommand = new OdbcCommand(query, odbcConnection, odbcTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     using (OdbcDataAdapter odbcDataAdapter = new OdbcDataAdapter(odbcCommand))
@@ -280,10 +280,10 @@ namespace Pangolin
             using (DataSet dataSet = new DataSet())
             using (OdbcConnection odbcConnection = new OdbcConnection(connectionString))
             {
-                await odbcConnection.OpenAsync(cancellationToken);
-
                 try
                 {
+                    await odbcConnection.OpenAsync(cancellationToken);
+
                     using (OdbcTransaction odbcTransaction = odbcConnection.BeginTransaction())
                     using (OdbcCommand odbcCommand = new OdbcCommand(query, odbcConnection, odbcTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
@@ -330,14 +330,14 @@ namespace Pangolin
 
             CommandType commandType = await DetermineCommandTypeAsync(query);
 
-            using (OdbcConnection odbcConn = new OdbcConnection(connectionString))
+            using (OdbcConnection odbcConnection = new OdbcConnection(connectionString))
             {
-                await odbcConn.OpenAsync(cancellationToken);
-
                 try
                 {
-                    using (OdbcTransaction odbcTrans = odbcConn.BeginTransaction())
-                    using (OdbcCommand odbcCmd = new OdbcCommand(query, odbcConn, odbcTrans) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
+                    await odbcConnection.OpenAsync(cancellationToken);
+
+                    using (OdbcTransaction odbcTrans = odbcConnection.BeginTransaction())
+                    using (OdbcCommand odbcCmd = new OdbcCommand(query, odbcConnection, odbcTrans) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
                         try
                         {
@@ -373,10 +373,10 @@ namespace Pangolin
 
             using (OdbcConnection odbcConn = new OdbcConnection(connectionString))
             {
-                await odbcConn.OpenAsync(cancellationToken);
-
                 try
                 {
+                    await odbcConn.OpenAsync(cancellationToken);
+
                     using (OdbcTransaction odbcTrans = odbcConn.BeginTransaction())
                     using (OdbcCommand odbcCmd = new OdbcCommand(query, odbcConn, odbcTrans) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
@@ -416,10 +416,10 @@ namespace Pangolin
 
             using (OdbcConnection odbcConnection = new OdbcConnection(connectionString))
             {
-                await odbcConnection.OpenAsync(cancellationToken);
-
                 try
                 {
+                    await odbcConnection.OpenAsync(cancellationToken);
+
                     using (OdbcTransaction odbcTransaction = odbcConnection.BeginTransaction())
                     using (OdbcCommand odbcCommand = new OdbcCommand(query, odbcConnection, odbcTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
@@ -453,10 +453,10 @@ namespace Pangolin
 
             using (OdbcConnection odbcConnection = new OdbcConnection(connectionString))
             {
-                await odbcConnection.OpenAsync(cancellationToken);
-
                 try
                 {
+                    await odbcConnection.OpenAsync(cancellationToken);
+
                     using (OdbcTransaction odbcTransaction = odbcConnection.BeginTransaction())
                     {
                         foreach (string query in queries)
@@ -503,10 +503,10 @@ namespace Pangolin
 
             using (OdbcConnection odbcConnection = new OdbcConnection(connectionString))
             {
-                await odbcConnection.OpenAsync(cancellationToken);
-
                 try
                 {
+                    await odbcConnection.OpenAsync(cancellationToken);
+
                     using (OdbcTransaction odbcTransaction = odbcConnection.BeginTransaction())
                     using (OdbcCommand odbcCommand = new OdbcCommand(query, odbcConnection, odbcTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
@@ -545,10 +545,10 @@ namespace Pangolin
 
             using (OdbcConnection odbcConnection = new OdbcConnection(connectionString))
             {
-                await odbcConnection.OpenAsync(cancellationToken);
-
                 try
                 {
+                    await odbcConnection.OpenAsync(cancellationToken);
+
                     using (OdbcTransaction odbcTransaction = odbcConnection.BeginTransaction())
                     {
                         foreach (OdbcParameter[] odbcParameters in odbcParametersCollection)
@@ -593,10 +593,10 @@ namespace Pangolin
 
             using (OdbcConnection odbcConnection = new OdbcConnection(connectionString))
             {
-                await odbcConnection.OpenAsync(cancellationToken);
-
                 try
                 {
+                    await odbcConnection.OpenAsync(cancellationToken);
+
                     using (OdbcTransaction odbcTransaction = odbcConnection.BeginTransaction())
                     using (OdbcCommand odbcCommand = new OdbcCommand(query, odbcConnection, odbcTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
@@ -633,10 +633,10 @@ namespace Pangolin
 
             using (OdbcConnection odbcConnection = new OdbcConnection(connectionString))
             {
-                await odbcConnection.OpenAsync(cancellationToken);
-
                 try
                 {
+                    await odbcConnection.OpenAsync(cancellationToken);
+
                     using (OdbcTransaction odbcTransaction = odbcConnection.BeginTransaction())
                     using (OdbcCommand odbcCommand = new OdbcCommand(query, odbcConnection, odbcTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
@@ -675,10 +675,10 @@ namespace Pangolin
 
             using (OdbcConnection odbcConnection = new OdbcConnection(connectionString))
             {
-                await odbcConnection.OpenAsync(cancellationToken);
-
                 try
                 {
+                    await odbcConnection.OpenAsync(cancellationToken);
+
                     using (OdbcTransaction odbcTransaction = odbcConnection.BeginTransaction())
                     using (OdbcCommand odbcCommand = new OdbcCommand(query, odbcConnection, odbcTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
@@ -728,18 +728,18 @@ namespace Pangolin
         {
             if (!await IsOleDbConnectionStringAsync(connectionString)) { throw new ArgumentException($"{nameof(connectionString)} is not a valid OleDb connection string.", nameof(connectionString)); }
             if (query == null) { throw new ArgumentNullException(nameof(query)); }
-            
+
+            CommandType commandType = await DetermineCommandTypeAsync(query);
+
             using (DataTable dataTable = new DataTable())
             using (OleDbConnection oleDbConnection = new OleDbConnection(connectionString))
             {
-                await oleDbConnection.OpenAsync(cancellationToken);
-
-                CommandType commandType = await DetermineCommandTypeAsync(query);
-
                 dataTable.TableName = commandType == CommandType.StoredProcedure ? query : string.Empty;
 
                 try
                 {
+                    await oleDbConnection.OpenAsync(cancellationToken);
+
                     using (OleDbTransaction oleDbTransaction = oleDbConnection.BeginTransaction())
                     using (OleDbCommand oleDbCommand = new OleDbCommand(query, oleDbConnection, oleDbTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
@@ -773,18 +773,18 @@ namespace Pangolin
             if (query == null) { throw new ArgumentNullException(nameof(query)); }
             if (oleDbParameters == null) { throw new ArgumentNullException(nameof(oleDbParameters)); }
             else if (oleDbParameters.Length < 1) { throw new ArgumentException($"{nameof(oleDbParameters)} contains no parameters.", nameof(oleDbParameters)); }
-            
+
+            CommandType commandType = await DetermineCommandTypeAsync(query);
+
             using (DataTable dataTable = new DataTable())
             using (OleDbConnection oleDbConnection = new OleDbConnection(connectionString))
             {
-                await oleDbConnection.OpenAsync(cancellationToken);
-
-                CommandType commandType = await DetermineCommandTypeAsync(query);
-
                 dataTable.TableName = commandType == CommandType.StoredProcedure ? query : string.Empty;
 
                 try
                 {
+                    await oleDbConnection.OpenAsync(cancellationToken);
+
                     using (OleDbTransaction oleDbTransaction = oleDbConnection.BeginTransaction())
                     using (OleDbCommand oleDbCommand = new OleDbCommand(query, oleDbConnection, oleDbTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
@@ -873,10 +873,10 @@ namespace Pangolin
             using (DataSet dataSet = new DataSet())
             using (OleDbConnection oleDbConnection = new OleDbConnection(connectionString))
             {
-                await oleDbConnection.OpenAsync(cancellationToken);
-
                 try
                 {
+                    await oleDbConnection.OpenAsync(cancellationToken);
+
                     using (OleDbTransaction oleDbTransaction = oleDbConnection.BeginTransaction())
                     using (OleDbCommand oleDbCommand = new OleDbCommand(query, oleDbConnection, oleDbTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
@@ -923,14 +923,14 @@ namespace Pangolin
 
             CommandType commandType = await DetermineCommandTypeAsync(query);
 
-            using (OleDbConnection oleDbConn = new OleDbConnection(connectionString))
+            using (OleDbConnection oleDbConnection = new OleDbConnection(connectionString))
             {
-                await oleDbConn.OpenAsync(cancellationToken);
-
                 try
                 {
-                    using (OleDbTransaction oleDbTransaction = oleDbConn.BeginTransaction())
-                    using (OleDbCommand oleDbCommand = new OleDbCommand(query, oleDbConn, oleDbTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
+                    await oleDbConnection.OpenAsync(cancellationToken);
+
+                    using (OleDbTransaction oleDbTransaction = oleDbConnection.BeginTransaction())
+                    using (OleDbCommand oleDbCommand = new OleDbCommand(query, oleDbConnection, oleDbTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
                         try
                         {
@@ -948,9 +948,9 @@ namespace Pangolin
                     }
                 }
                 catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
-
-                return datum;
             }
+
+            return datum;
         }
 
         public static async Task<object> OleDbReadDatumAsync(string connectionString, string query, OleDbParameter[] oleDbParameters, CancellationToken cancellationToken)
@@ -964,14 +964,14 @@ namespace Pangolin
 
             CommandType commandType = await DetermineCommandTypeAsync(query);
 
-            using (OleDbConnection oleDbConn = new OleDbConnection(connectionString))
+            using (OleDbConnection oleDbConnection = new OleDbConnection(connectionString))
             {
-                await oleDbConn.OpenAsync(cancellationToken);
-
                 try
                 {
-                    using (OleDbTransaction oleDbTransaction = oleDbConn.BeginTransaction())
-                    using (OleDbCommand oleDbCommand = new OleDbCommand(query, oleDbConn, oleDbTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
+                    await oleDbConnection.OpenAsync(cancellationToken);
+
+                    using (OleDbTransaction oleDbTransaction = oleDbConnection.BeginTransaction())
+                    using (OleDbCommand oleDbCommand = new OleDbCommand(query, oleDbConnection, oleDbTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
                         oleDbCommand.Parameters.AddRange(oleDbParameters);
 
@@ -991,9 +991,9 @@ namespace Pangolin
                     }
                 }
                 catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
-
-                return datum;
             }
+
+            return datum;
         }
         #endregion
 
@@ -1007,14 +1007,14 @@ namespace Pangolin
 
             CommandType commandType = await DetermineCommandTypeAsync(query);
 
-            using (OleDbConnection oleDbConn = new OleDbConnection(connectionString))
+            using (OleDbConnection oleDbConnection = new OleDbConnection(connectionString))
             {
-                await oleDbConn.OpenAsync(cancellationToken);
-
                 try
                 {
-                    using (OleDbTransaction oleDbTransaction = oleDbConn.BeginTransaction())
-                    using (OleDbCommand oleDbCommand = new OleDbCommand(query, oleDbConn, oleDbTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
+                    await oleDbConnection.OpenAsync(cancellationToken);
+                    
+                    using (OleDbTransaction oleDbTransaction = oleDbConnection.BeginTransaction())
+                    using (OleDbCommand oleDbCommand = new OleDbCommand(query, oleDbConnection, oleDbTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
                         try
                         {
@@ -1046,10 +1046,10 @@ namespace Pangolin
 
             using (OleDbConnection oleDbConnection = new OleDbConnection(connectionString))
             {
-                await oleDbConnection.OpenAsync(cancellationToken);
-
                 try
                 {
+                    await oleDbConnection.OpenAsync(cancellationToken);
+
                     using (OleDbTransaction oleDbTransaction = oleDbConnection.BeginTransaction())
                     {
                         foreach (string query in queries)
@@ -1096,10 +1096,10 @@ namespace Pangolin
 
             using (OleDbConnection oleDbConnection = new OleDbConnection(connectionString))
             {
-                await oleDbConnection.OpenAsync(cancellationToken);
-
                 try
                 {
+                    await oleDbConnection.OpenAsync(cancellationToken);
+
                     using (OleDbTransaction oleDbTransaction = oleDbConnection.BeginTransaction())
                     using (OleDbCommand oleDbCommand = new OleDbCommand(query, oleDbConnection, oleDbTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
@@ -1138,10 +1138,10 @@ namespace Pangolin
 
             using (OleDbConnection oleDbConnection = new OleDbConnection(connectionString))
             {
-                await oleDbConnection.OpenAsync(cancellationToken);
-
                 try
                 {
+                    await oleDbConnection.OpenAsync(cancellationToken);
+
                     using (OleDbTransaction oleDbTransaction = oleDbConnection.BeginTransaction())
                     {
                         foreach (OleDbParameter[] oleDbParameters in oleDbParametersCollection)
@@ -1186,10 +1186,10 @@ namespace Pangolin
 
             using (OleDbConnection oleDbConnection = new OleDbConnection(connectionString))
             {
-                await oleDbConnection.OpenAsync(cancellationToken);
-
                 try
                 {
+                    await oleDbConnection.OpenAsync(cancellationToken);
+
                     using (OleDbTransaction oleDbTransaction = oleDbConnection.BeginTransaction())
                     using (OleDbCommand oleDbCommand = new OleDbCommand(query, oleDbConnection, oleDbTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
@@ -1208,9 +1208,9 @@ namespace Pangolin
                     }
                 }
                 catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
-
-                return datum;
             }
+
+            return datum;
         }
 
         public static async Task<object> OleDbWriteDataReadDatumAsync(string connectionString, string query, OleDbParameter[] oleDbParameters, CancellationToken cancellationToken)
@@ -1226,10 +1226,10 @@ namespace Pangolin
 
             using (OleDbConnection oleDbConnection = new OleDbConnection(connectionString))
             {
-                await oleDbConnection.OpenAsync(cancellationToken);
-
                 try
                 {
+                    await oleDbConnection.OpenAsync(cancellationToken);
+
                     using (OleDbTransaction oleDbTransaction = oleDbConnection.BeginTransaction())
                     using (OleDbCommand oleDbCommand = new OleDbCommand(query, oleDbConnection, oleDbTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
@@ -1250,9 +1250,9 @@ namespace Pangolin
                     }
                 }
                 catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); throw; }
-
-                return datum;
             }
+
+            return datum;
         }
 
         public static async Task<OleDbParameter[]> OleDbWriteDataReadDataAsync(string connectionString, string query, OleDbParameter[] oleDbParameters, CancellationToken cancellationToken)
@@ -1268,10 +1268,10 @@ namespace Pangolin
 
             using (OleDbConnection oleDbConnection = new OleDbConnection(connectionString))
             {
-                await oleDbConnection.OpenAsync(cancellationToken);
-
                 try
                 {
+                    await oleDbConnection.OpenAsync(cancellationToken);
+
                     using (OleDbTransaction oleDbTransaction = oleDbConnection.BeginTransaction())
                     using (OleDbCommand oleDbCommand = new OleDbCommand(query, oleDbConnection, oleDbTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
@@ -1322,17 +1322,17 @@ namespace Pangolin
             if (!await IsSqlConnectionStringAsync(connectionString)) { throw new ArgumentException($"{nameof(connectionString)} is not a valid SQL connection string.", nameof(connectionString)); }
             if (query == null) { throw new ArgumentNullException(nameof(query)); }
 
+            CommandType commandType = await DetermineCommandTypeAsync(query);
+
             using (DataTable dataTable = new DataTable())
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
-                await sqlConnection.OpenAsync(cancellationToken);
-
-                CommandType commandType = await DetermineCommandTypeAsync(query);
-
                 dataTable.TableName = commandType == CommandType.StoredProcedure ? query : string.Empty;
 
                 try
                 {
+                    await sqlConnection.OpenAsync(cancellationToken);
+
                     using (SqlTransaction sqlTransaction = sqlConnection.BeginTransaction())
                     using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnection, sqlTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
@@ -1371,17 +1371,17 @@ namespace Pangolin
             if (sqlParameters == null) { throw new ArgumentNullException(nameof(sqlParameters)); }
             else if (sqlParameters.Length < 1) { throw new ArgumentException($"{nameof(sqlParameters)} contains no parameters.", nameof(sqlParameters)); }
 
+            CommandType commandType = await DetermineCommandTypeAsync(query);
+
             using (DataTable dataTable = new DataTable())
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
-                await sqlConnection.OpenAsync(cancellationToken);
-
-                CommandType commandType = await DetermineCommandTypeAsync(query);
-
                 dataTable.TableName = commandType == CommandType.StoredProcedure ? query : string.Empty;
 
                 try
                 {
+                    await sqlConnection.OpenAsync(cancellationToken);
+
                     using (SqlTransaction sqlTransaction = sqlConnection.BeginTransaction())
                     using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnection, sqlTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
@@ -1420,15 +1420,15 @@ namespace Pangolin
             if (!await IsSqlConnectionStringAsync(connectionString)) { throw new ArgumentException($"{nameof(connectionString)} is not a valid SQL connection string.", nameof(connectionString)); }
             if (query == null) { throw new ArgumentNullException(nameof(query)); }
 
+            CommandType commandType = await DetermineCommandTypeAsync(query);
+
             using (DataSet dataSet = new DataSet())
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
-                await sqlConnection.OpenAsync(cancellationToken);
-
-                CommandType commandType = await DetermineCommandTypeAsync(query);
-
                 try
                 {
+                    await sqlConnection.OpenAsync(cancellationToken);
+
                     using (SqlTransaction sqlTransaction = sqlConnection.BeginTransaction())
                     using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnection, sqlTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     using (SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(sqlCommand))
@@ -1469,15 +1469,15 @@ namespace Pangolin
             if (sqlParameters == null) { throw new ArgumentNullException(nameof(sqlParameters)); }
             else if (sqlParameters.Length < 1) { throw new ArgumentException($"{nameof(sqlParameters)} contains no parameters.", nameof(sqlParameters)); }
 
+            CommandType commandType = await DetermineCommandTypeAsync(query);
+
             using (DataSet dataSet = new DataSet())
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
-                await sqlConnection.OpenAsync(cancellationToken);
-
-                CommandType commandType = await DetermineCommandTypeAsync(query);
-
                 try
                 {
+                    await sqlConnection.OpenAsync(cancellationToken);
+
                     using (SqlTransaction sqlTransaction = sqlConnection.BeginTransaction())
                     using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnection, sqlTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
@@ -1522,14 +1522,14 @@ namespace Pangolin
 
             object datum = null;
 
+            CommandType commandType = await DetermineCommandTypeAsync(query);
+
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
-                await sqlConnection.OpenAsync(cancellationToken);
-
-                CommandType commandType = await DetermineCommandTypeAsync(query);
-
                 try
                 {
+                    await sqlConnection.OpenAsync(cancellationToken);
+
                     using (SqlTransaction sqlTransaction = sqlConnection.BeginTransaction())
                     using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnection, sqlTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
@@ -1566,14 +1566,14 @@ namespace Pangolin
 
             object datum = null;
 
+            CommandType commandType = await DetermineCommandTypeAsync(query);
+
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
-                await sqlConnection.OpenAsync(cancellationToken);
-
-                CommandType commandType = await DetermineCommandTypeAsync(query);
-
                 try
                 {
+                    await sqlConnection.OpenAsync(cancellationToken);
+
                     using (SqlTransaction sqlTransaction = sqlConnection.BeginTransaction())
                     using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnection, sqlTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
@@ -1612,14 +1612,14 @@ namespace Pangolin
 
             int rowsAffected = 0;
 
+            CommandType commandType = await DetermineCommandTypeAsync(query);
+
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
                 try
                 {
                     await sqlConnection.OpenAsync(cancellationToken);
-
-                    CommandType commandType = await DetermineCommandTypeAsync(query);
-
+                    
                     using (SqlTransaction sqlTransaction = sqlConnection.BeginTransaction())
                     using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnection, sqlTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
                     {
@@ -1657,10 +1657,10 @@ namespace Pangolin
 
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
-                await sqlConnection.OpenAsync(cancellationToken);
-
                 try
                 {
+                    await sqlConnection.OpenAsync(cancellationToken);
+
                     using (SqlTransaction sqlTransaction = sqlConnection.BeginTransaction())
                     {
                         foreach (string query in queries)
@@ -1703,13 +1703,13 @@ namespace Pangolin
 
             int rowsAffected = 0;
 
+            CommandType commandType = await DetermineCommandTypeAsync(query);
+
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
                 try
                 {
                     await sqlConnection.OpenAsync(cancellationToken);
-
-                    CommandType commandType = await DetermineCommandTypeAsync(query);
 
                     using (SqlTransaction sqlTransaction = sqlConnection.BeginTransaction())
                     using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnection, sqlTransaction) { CommandTimeout = ConfigurationLayer.CommandTimeOut, CommandType = commandType })
@@ -1749,14 +1749,14 @@ namespace Pangolin
 
             int rowsAffected = 0;
 
+            CommandType commandType = await DetermineCommandTypeAsync(query);
+
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
                 try
                 {
                     await sqlConnection.OpenAsync(cancellationToken);
-
-                    CommandType commandType = await DetermineCommandTypeAsync(query);
-
+                    
                     using (SqlTransaction sqlTransaction = sqlConnection.BeginTransaction())
                     {
                         foreach (SqlParameter[] sqlParameters in sqlParametersCollection)
@@ -1802,11 +1802,11 @@ namespace Pangolin
 
             object datum = null;
 
+            CommandType commandType = await DetermineCommandTypeAsync(query);
+
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
                 await sqlConnection.OpenAsync(cancellationToken);
-
-                CommandType commandType = await DetermineCommandTypeAsync(query);
 
                 try
                 {
@@ -1845,11 +1845,11 @@ namespace Pangolin
 
             object datum = null;
 
+            CommandType commandType = await DetermineCommandTypeAsync(query);
+
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
                 await sqlConnection.OpenAsync(cancellationToken);
-
-                CommandType commandType = await DetermineCommandTypeAsync(query);
 
                 try
                 {
@@ -1890,12 +1890,12 @@ namespace Pangolin
 
             SqlParameter[] data = null;
 
+            CommandType commandType = await DetermineCommandTypeAsync(query);
+
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
                 await sqlConnection.OpenAsync(cancellationToken);
-
-                CommandType commandType = await DetermineCommandTypeAsync(query);
-
+                
                 try
                 {
                     using (SqlTransaction sqlTransaction = sqlConnection.BeginTransaction())
@@ -1930,7 +1930,7 @@ namespace Pangolin
         }
         #endregion
         #endregion
-
+        
         #region Database Scripting
         public static async Task<DataTable> GetDatabaseTablesAsync(string connectionString, string tableCatalog, string tableSchema, CancellationToken cancellationToken)
         {

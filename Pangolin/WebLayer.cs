@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Net;
 using System.Security;
@@ -39,11 +40,7 @@ namespace Pangolin
 
                 return $"Basic {authorizationBytesBase64}";
             }
-            catch (EncoderFallbackException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (EncoderFallbackException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
 
         #region FtpWebRequest
@@ -421,8 +418,41 @@ namespace Pangolin
             return HttpStatusCode.BadRequest.ToString();
         }
 
+        public static async Task<string> GetImageAsync(Uri remoteAddress, Uri localAddress)
+        {
+            try
+            {
+                if ((remoteAddress.Scheme == Uri.UriSchemeHttps || remoteAddress.Scheme == Uri.UriSchemeHttp) && !FileLayer.FileExists(localAddress.LocalPath))
+                {
+                    HttpWebRequest httpWebRequest = WebRequest.CreateHttp(remoteAddress);
+                    httpWebRequest.AutomaticDecompression = _defaultDecompression;
+                    httpWebRequest.Method = _methodGet;
+
+                    using (HttpWebResponse httpWebResponse = await httpWebRequest.GetResponseAsync() as HttpWebResponse)
+                    using (Stream stream = httpWebResponse.GetResponseStream())
+                    using (Image image = Image.FromStream(stream, true, true))
+                    {
+                        image.Save(localAddress.LocalPath);
+                    }
+                }
+            }
+            catch (System.Runtime.InteropServices.ExternalException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ProtocolViolationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (WebException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (NotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (SecurityException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (InvalidOperationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (NotImplementedException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+
+            return HttpStatusCode.BadRequest.ToString();
+        }
+
         public static async Task<bool> HeadAsync(Uri address)
         {
+            ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072; // TLS 1.2
+
             try
             {
                 if (address.Scheme == Uri.UriSchemeHttps || address.Scheme == Uri.UriSchemeHttp)
@@ -430,13 +460,16 @@ namespace Pangolin
                     HttpWebRequest httpWebRequest = WebRequest.CreateHttp(address);
                     httpWebRequest.AutomaticDecompression = _defaultDecompression;
                     httpWebRequest.Method = _methodHead;
-
+                    httpWebRequest.UserAgent = ConfigurationLayer.UserAgentImpersonate;
+                    httpWebRequest.Referer = address.GetLeftPart(UriPartial.Authority);
+                    httpWebRequest.Host = address.Host;
+                    
                     using (HttpWebResponse httpWebResponse = await httpWebRequest.GetResponseAsync() as HttpWebResponse)
                     {
                         return httpWebResponse.StatusCode == HttpStatusCode.OK;
                     }
                 }
-                
+
             }
             catch (ProtocolViolationException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
             catch (NotSupportedException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
@@ -444,6 +477,11 @@ namespace Pangolin
             catch (NotImplementedException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
             catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
             catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (WebException exc) when (exc.Status == WebExceptionStatus.ProtocolError && exc.Response != null)
+            {
+                HttpWebResponse httpWebResponse = exc.Response as HttpWebResponse;
+                if (httpWebResponse.StatusCode != HttpStatusCode.NotFound) { throw; }
+            }
 
             return false;
         }
@@ -473,6 +511,11 @@ namespace Pangolin
             catch (NotImplementedException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
             catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
             catch (ArgumentException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
+            catch (WebException exc) when (exc.Status == WebExceptionStatus.ProtocolError && exc.Response != null)
+            {
+                HttpWebResponse httpWebResponse = exc.Response as HttpWebResponse;
+                if (httpWebResponse.StatusCode != HttpStatusCode.NotFound) { throw; }
+            }
 
             return false;
         }
@@ -991,7 +1034,7 @@ namespace Pangolin
                     webClient.Headers.Add("Host", remoteAddress.Host);
                     webClient.DownloadFile(remoteAddress, localAddress.LocalPath);
 
-                    while (webClient.IsBusy) { }
+                    while (webClient.IsBusy) { await Task.Delay(500); }
                 }
             }
             catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); }
@@ -1008,6 +1051,8 @@ namespace Pangolin
                 {
                     webClient.Headers.Add(HttpRequestHeader.Authorization, GetBasicAuthenticationHeader(username, password));
                     webClient.DownloadFileAsync(remoteAddress, localAddress.LocalPath);
+
+                    while (webClient.IsBusy) { await Task.Delay(500); }
                 }
             }
             catch (ArgumentNullException exc) { await ExceptionLayer.CoreHandleAsync(exc); }

@@ -179,11 +179,11 @@ namespace Pangolin
         {
             if (keyValuePairs == null)
             {
-                throw new ArgumentNullException("keyValuePairs");
+                throw new ArgumentNullException(nameof(keyValuePairs));
             }
             if (index < 0)
             {
-                throw new ArgumentOutOfRangeException("index", index, "index cannot be less than zero.");
+                throw new ArgumentOutOfRangeException(nameof(index), index, nameof(index) + " cannot be less than zero.");
             }
             if ((index + Count) > keyValuePairs.Length)
             {
@@ -212,7 +212,7 @@ namespace Pangolin
         {
             if (string.IsNullOrWhiteSpace(key))
             {
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
             }
 
             bool containsValue = false;

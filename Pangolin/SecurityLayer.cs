@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Security;
 using System.Security.Permissions;
 using System.Security.Principal;
@@ -23,7 +22,7 @@ namespace Pangolin
                     return windowsPrincipal.IsInRole(WindowsBuiltInRole.Administrator);
                 }
             }
-            catch (SecurityException exc) { ExceptionLayer.Handle(exc); }
+            catch (SecurityException exc){ ExceptionLayer.CoreHandle(exc); }
 
             return false;
         }
@@ -54,11 +53,7 @@ namespace Pangolin
                 }
                 catch (SecurityException) { /* The caller does not have the appropriate permissions. */ }
             }
-            catch (ArgumentException exc) /* The path parameter does not specify the absolute path to the file or directory. */
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (ArgumentException exc) { ExceptionLayer.CoreHandle(exc); throw; /* The path parameter does not specify the absolute path to the file or directory. */ }
 
             return hasPermissions;
         }

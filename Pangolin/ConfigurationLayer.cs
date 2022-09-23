@@ -112,11 +112,7 @@ namespace Pangolin
             {
                 _value = !string.IsNullOrWhiteSpace(name) ? ConfigurationManager.ConnectionStrings[name].ConnectionString : null;
             }
-            catch (ConfigurationErrorsException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (ConfigurationErrorsException exc) { ExceptionLayer.CoreHandle(exc); throw; }
 
             return _value ?? string.Empty;
         }
@@ -140,11 +136,7 @@ namespace Pangolin
             {
                 _value = !string.IsNullOrWhiteSpace(key) ? Environment.GetEnvironmentVariable(key) : null;
             }
-            catch (SecurityException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (SecurityException exc) { ExceptionLayer.CoreHandle(exc); throw; }
 
             return _value ?? string.Empty;
         }
@@ -170,11 +162,7 @@ namespace Pangolin
             {
                 _value = ConfigurationManager.AppSettings[key];
             }
-            catch (ConfigurationErrorsException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (ConfigurationErrorsException exc) { ExceptionLayer.CoreHandle(exc); throw; }
 
             return _value ?? string.Empty;
         }
@@ -201,11 +189,7 @@ namespace Pangolin
             {
                 return Environment.GetFolderPath(specialFolder);
             }
-            catch (PlatformNotSupportedException exc)
-            {
-                ExceptionLayer.Handle(exc);
-                throw;
-            }
+            catch (PlatformNotSupportedException exc) { ExceptionLayer.CoreHandle(exc); throw; }
         }
         #endregion
 
@@ -275,14 +259,14 @@ namespace Pangolin
                         {
                             _valueT = (T)typeConverter?.ConvertFromString(_value);
                         }
-                        catch (NotSupportedException exc) { ExceptionLayer.Handle(exc); throw; }
-                        catch (Exception exc) { ExceptionLayer.Handle(exc); throw; }
+                        catch (NotSupportedException exc){ ExceptionLayer.CoreHandle(exc); throw; }
+                        catch (Exception exc){ ExceptionLayer.CoreHandle(exc); throw; }
                         break;
                 }
             }
-            catch (ArgumentNullException exc) { ExceptionLayer.Handle(exc); throw; }
-            catch (FormatException exc) { ExceptionLayer.Handle(exc); throw; }
-            catch (OverflowException exc) { ExceptionLayer.Handle(exc); throw; }
+            catch (ArgumentNullException exc){ ExceptionLayer.CoreHandle(exc); throw; }
+            catch (FormatException exc){ ExceptionLayer.CoreHandle(exc); throw; }
+            catch (OverflowException exc){ ExceptionLayer.CoreHandle(exc); throw; }
 
             return _valueT;
         }
